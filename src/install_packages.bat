@@ -1,2 +1,3 @@
-npm i react-svg-pan-zoom
+npm install primereact
+npm install primeicons
 npm install file-saver --save

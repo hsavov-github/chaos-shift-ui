@@ -3,24 +3,57 @@ import './App.css';
 import {INITIAL_VALUE, ReactSVGPanZoom, TOOL_NONE, fitSelection, zoomOnViewerCenter, fitToViewer} from 'react-svg-pan-zoom';
 import React, { useState, useEffect, useRef } from 'react';
 import { saveAs } from "file-saver";
+import { Button } from 'primereact/button';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import 'primereact/resources/themes/saga-blue/theme.css';
 
+const Operations = Object.freeze({
+		Draw: Symbol("Draw"),
+		Write: Symbol("Write"),
+		Delete: Symbol("Delete"),
+		ZoomIn: Symbol("ZoomIn"),
+		ZoomOut: Symbol("ZoomOut")
+	})
+const Cursors = new Map([
+  [Operations.Draw, 'crosshair'],
+  [Operations.Write, 'text'],
+  [Operations.Delete, 'not-allowed'],
+  [Operations.ZoomIn, 'zoom-in'],
+  [Operations.ZoomOut, 'zoom-out'],
+]);
 
 function DrawingBoard({ imageUrl, brushWidth }) {
   const svgRef = useRef(null); // reference to the svg element
   const schemaURL = imageUrl;
-  const [paths, setPaths] = useState([]); // array of paths to draw on the svg
-  const [points, setPoints] = useState([]); // array of points to draw the current path
+  const [enrichment, setEnrichment] = useState({
+		  paths: [],
+		  points: [],
+		  texts: [],
+		});
+  const updatePaths = (enrichment, newPaths) => ({
+    ...enrichment,
+    paths: newPaths
+  });
+  const updatePoints = (enrichment, newPoints) => ({
+    ...enrichment,
+    points: newPoints
+  });
+  const updateTexts = (enrichment, newTexts) => ({
+    ...enrichment,
+    texts: newTexts
+  });
+  
+  //const [paths, setPaths] = useState([]); // array of paths to draw on the svg
+  //const [points, setPoints] = useState([]); // array of points to draw the current path
   const [drawing, setDrawing] = useState(false); // flag to indicate if the user is drawing
   const [offsetX, setOffsetX] = useState(0); // offset for the x coordinate of the points
   const [offsetY, setOffsetY] = useState(0); // offset for the y coordinate of the points
-  const [controlType, setControlType] = useState("draw"); // offset for the y coordinate of the points
+  const [controlType, setControlType] = useState(Operations.Draw); // offset for the y coordinate of the points
+  const [cursorStyle, setCursorStyle] = useState('default');
   //Text
-  const [texts, setTexts] = useState([]); // initial array of texts and coordinates
-  
-  //pick action type
-  const changeControl = (e) => {
-    setControlType(e.target.value);
-  };
+  //const [texts, setTexts] = useState([]); // initial array of texts and coordinates
+ 
   
   // zoom
   const [scale, setScale] = useState(1); // initial scale
@@ -34,6 +67,8 @@ function DrawingBoard({ imageUrl, brushWidth }) {
     //svg.style.transformOrigin = `${cx}px ${cy}px`;
 	svg.style.transformOrigin = `0px 0px`;
   }, []);
+  
+  
    function zoomIn() {
     // increase the scale by 10%
     setScale(scale => scale * 1.1);
@@ -49,17 +84,18 @@ function DrawingBoard({ imageUrl, brushWidth }) {
   //drawing
   // handle mouse down event
   const handleMouseDown = (e) => {
-    setDrawing(true); // start drawing
+     // start drawing
     e.preventDefault();
 	//alert(controlType);
-    if (svgRef.current && controlType === "draw") {
+    if (svgRef.current && controlType === Operations.Draw) {
       // get the bounding box of the svg element
+	  setDrawing(true);
       let bbox = svgRef.current.getBoundingClientRect();
       // calculate the offset for the x and y coordinates
 	  //alert("scale " + scale + bbox + " x " + bbox.x + " y " +bbox.x);
       setOffsetX(bbox.x);
       setOffsetY(bbox.y);
-    } else if (svgRef.current && controlType === "write") {
+    } else if (svgRef.current && controlType === Operations.Write) {
 		const svg = svgRef.current;
 		const point = svg.createSVGPoint();
 		point.x = e.clientX;
@@ -67,59 +103,62 @@ function DrawingBoard({ imageUrl, brushWidth }) {
 		const {x, y} = point.matrixTransform(svg.getScreenCTM().inverse());
 		// prompt the user for some text
 		const value = prompt("Enter some text");
-		const id = calculateTextId(texts);
+		const id = calculateElementId(enrichment.texts);
 		// update the texts state with the new text object and coordinates
-		setTexts(texts => [...texts, {value, x, y, id }]);
+		//const updated = updateTexts(enrichment, [...enrichment.texts, {value, x, y, id }]);
+		setEnrichment(orig => updateTexts(orig, [...orig.texts, {value, x, y, id }]));
+	} else if (svgRef.current && controlType === Operations.ZoomIn) {
+		zoomIn();
+	} else if (svgRef.current &&controlType === Operations.ZoomOut) {
+		zoomOut();
 	}
   };
   
-  const calculateTextId = (textElements)  => {
-	  if(textElements.length === 0) {
+  const calculateElementId = (elements)  => {
+	  if(elements.length === 0) {
 		  return 1;
 	  }
-	  let result = textElements.flat().reduce((max, obj) => {
-		return max.score < obj.id ? obj : max;
+	  let max = elements.flat().reduce((max, obj) => {
+		return max.id < obj.id ? obj : max;
 	  });
-	  return [result];
+	  return max.id + 1;
   }
 
   // handle mouse move event
   const handleMouseMove = (e) => {
     if (drawing) {
       // if drawing, add more points to the array with the offset subtracted
-      setPoints((points) => [
-        ...points,
-        [(1/scale)*(e.clientX - offsetX), (1/scale)*( e.clientY - offsetY)],
-      ]);
+	  const updated = updatePoints(enrichment,
+			[...enrichment.points, [(1/scale)*(e.clientX - offsetX), (1/scale)*( e.clientY - offsetY)],]);
+      setEnrichment(updated);
     }
   };
 
   // handle mouse up event
   const handleMouseUp = () => {
     setDrawing(false); // stop drawing
-    if (points.length > 1) {
+    if (enrichment.points.length > 1) {
       // if there are more than one point in the current path, add it to the paths array
-      setPaths((paths) => [...paths, points]);
+	  let path = {points: enrichment.points, id:calculateElementId(enrichment.paths)};
+	  setEnrichment((orig) => updatePaths(enrichment, [...enrichment.paths, path]));
     }
-    setPoints([]); // reset the points array for the next path
+	// reset the points array for the next path
+    setEnrichment((orig) => updatePoints(orig, [])); 
   };
   
   const handleClick = (e) => {
     var target = e.target;
 	// Check if the target element is a path element
-	if( !(controlType ==="delete")) {
+	if( !(controlType === Operations.Delete)) {
 		return;
 	}
 	if (target.tagName === "path") {
 	// Prompt the user to confirm deleting the path
-		try {
-		  svgRef.current.removeChild(target);
-		} catch (e) {
-		  alert(e);
-		} 	  
+		const updated = enrichment.paths.filter( path => filterElements(path, target));
+		setEnrichment((orig) => updatePaths(orig, updated));
 	} else if (target.tagName === "text") {
-		const updated = texts.filter( text => filterElements(text, target));
-        setTexts(texts => [...updated]);
+		const updated = enrichment.texts.filter( text => filterElements(text, target));
+		setEnrichment((orig) => updateTexts(orig, updated));
 	}
   };
   
@@ -215,22 +254,31 @@ function DrawingBoard({ imageUrl, brushWidth }) {
     }
     return new Blob([uInt8Array], { type: contentType });
   };
+  
+  const handlePickOperation = (operationType) => {
+	setControlType(operationType);
+    setCursorStyle(Cursors.get(operationType));
+  };
 
   return (
     <div className="drawing-board">
       <h1>Drawing Board</h1>
 	  <div className="controls" style={{position: "relative", zIndex: 1}}>
-		  <button onClick={zoomIn}>Zoom in</button>
-		  <button onClick={zoomOut}>Zoom out</button>
-		  <div onChange={changeControl}>
-			<input type="radio" value="draw" name="controlType" /> Draw
-			<input type="radio" value="write" name="controlType" /> Write
-			<input type="radio" value="delete" name="controlType" /> Delete
-		 </div>
-		  <button onClick={saveSVG}>Save as SVG</button>
-          <button onClick={savePNG}>Save as PNG</button>
+		  <Button onClick={zoomIn}>Zoom in</Button>
+		  <Button onClick={zoomOut}>Zoom out</Button>
+		  <Button onClick={saveSVG}>Save as SVG</Button>
+          <Button onClick={savePNG}>Save as PNG</Button>
+		  <div>
+		     <span className="p-buttonset">
+				  <Button icon="pi pi-pencil" onClick={() => handlePickOperation(Operations.Draw)}/>
+				  <Button icon="pi pi-eraser" onClick={() => handlePickOperation(Operations.Delete)}/>
+				  <Button icon="pi pi-file-edit" onClick={() => handlePickOperation(Operations.Write)}/>
+				  <Button icon="pi pi-search-plus" onClick={() => handlePickOperation(Operations.ZoomIn)}/>
+				  <Button icon="pi pi-search-minus" onClick={() => handlePickOperation(Operations.ZoomOut)}/>
+			  </span>
+			</div>
 	  </div>
-		<div className="board" style={{width: "800px", height: "800px", zIndex: 0}}>
+		<div className="board" style={{width: "800px", height: "800px", zIndex: 0, cursor: cursorStyle}}>
 		  <svg
 			ref={svgRef}
 			width="800px"
@@ -244,25 +292,26 @@ function DrawingBoard({ imageUrl, brushWidth }) {
             onMouseOut={handleHoverLeave}
 		  >
 		  <image href={schemaURL}  width="100%" height="100%"/>
-			{paths.map((path) => (
+			{enrichment.paths.map((path) => (
 			  <path
-				key={path.toString()}
-				d={pointsToString(path)}
+			    id={path.id}
+				key={path.points.toString()}
+				d={pointsToString(path.points)}
 				fill="none"
 				stroke="red"
 				strokeWidth={brushWidth * (1/scale)}
 			  />
 			))}
-			{points.length > 0 && (
+			{enrichment.points.length > 0 && (
 			  <path
-				d={pointsToString(points)}
+				d={pointsToString(enrichment.points)}
 				fill="none"
 				stroke="black"
 				strokeWidth={brushWidth * (1/scale)}
 				strokeDasharray="5,5"
 			  />
 			)}
-			{texts.map((text, i) => (
+			{enrichment.texts.map((text, i) => (
             <text key={i} x={text.x} y={text.y} id={text.id} style={{fill: "black"}}>{text.value}</text>
           ))}
 		  </svg>
