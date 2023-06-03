@@ -60,6 +60,26 @@ function DrawingBoard({ imageURL, brushWidth }) {
   const [editPosition, setEditPosition] = useState({ x: 0, y: 0 });
   const inputRef = useRef();
  
+ 
+  //touchscreen draw - hacky but allows passing passive:false 
+  useEffect(() => {
+    const svgElement = svgRef.current;
+    if (svgElement) {
+      const handleTouchMove = (e) => {
+        e.preventDefault();
+        console.log("Handle touch" + e);
+		e.preventDefault();
+		console.log("Handle touch");
+		handleMouseMove(e.touches[0]);
+      };
+      svgElement.addEventListener('touchmove', handleTouchMove, {
+        passive: false,
+      });
+      return () => {
+        svgElement.removeEventListener('touchmove', handleTouchMove);
+      };
+    }
+  });
   
   // zoom
   const [scale, setScale] = useState(1); // initial scale
@@ -97,6 +117,7 @@ function DrawingBoard({ imageURL, brushWidth }) {
       // get the bounding box of the svg element
 	  e.preventDefault();
 	  setDrawing(true);
+	  //console.log("Drawing");
       let bbox = svgRef.current.getBoundingClientRect();
       // calculate the offset for the x and y coordinates
 	  //alert("scale " + scale + bbox + " x " + bbox.x + " y " +bbox.x);
@@ -149,17 +170,18 @@ function DrawingBoard({ imageURL, brushWidth }) {
       // if drawing, add more points to the array with the offset subtracted
 	  const updated = updatePoints(enrichment,
 			[...enrichment.points, [(1/scale)*(e.clientX - offsetX), (1/scale)*( e.clientY - offsetY)],]);
-      setEnrichment(updated);
+      setEnrichment(updated);	  
     }
-  };
-  
-  const handleTouchMove = (e) => {
-    e.preventDefault();
-    handleMouseMove(e.touches[0]);
   };
 
   // handle mouse up event
-  const handleMouseUp = () => {
+  const handleMouseUp = (e) => {
+	if(!drawing) {
+		//redirect for touch events
+		console.log("Redirect to click move");
+		handleClick(e);
+		return;
+	}
     setDrawing(false); // stop drawing
     if (enrichment.points.length > 1) {
       // if there are more than one point in the current path, add it to the paths array
@@ -177,16 +199,18 @@ function DrawingBoard({ imageURL, brushWidth }) {
 		return;
 	}
 	if (target.tagName === "path") {
+		console.log("Deleting path" );
 		const updated = enrichment.paths.filter( path => filterElements(path, target));
 		setEnrichment((orig) => updatePaths(orig, updated));
 	} else if (target.tagName === "text") {
+		console.log("Deleting text" );
 		const updated = enrichment.texts.filter( text => filterElements(text, target));
 		setEnrichment((orig) => updateTexts(orig, updated));
 	}
   };
   
   const filterElements = (element, target) => {
-	  return element.id !== target.id;
+	  return element.id != target.id;
   }
   
   const handleHoverEnter = (e) => {
@@ -382,7 +406,6 @@ function DrawingBoard({ imageURL, brushWidth }) {
 			onMouseMove={handleMouseMove}
 			onMouseUp={handleMouseUp}
 			onTouchStart={handleMouseDown}
-            onTouchMove={handleTouchMove}
             onTouchEnd={handleMouseUp}
 			onClick={handleClick}
 			onMouseOver={handleHoverEnter}
