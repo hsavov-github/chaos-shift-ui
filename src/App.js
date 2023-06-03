@@ -59,30 +59,45 @@ function DrawingBoard({ imageURL, brushWidth }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editPosition, setEditPosition] = useState({ x: 0, y: 0 });
   const inputRef = useRef();
+    // zoom
+  const [scale, setScale] = useState(1); // initial scale
  
  
   //touchscreen draw - hacky but allows passing passive:false 
   useEffect(() => {
     const svgElement = svgRef.current;
-    if (svgElement) {
+    if (svgElement && controlType === Operations.Draw) {
       const handleTouchMove = (e) => {
         e.preventDefault();
-        console.log("Handle touch" + e);
-		e.preventDefault();
 		console.log("Handle touch");
-		handleMouseMove(e.touches[0]);
+		handleMouseDown(e.touches[0]);
+		handleMouseMove(e.touches[0]);		
       };
-      svgElement.addEventListener('touchmove', handleTouchMove, {
-        passive: false,
-      });
+      svgElement.addEventListener('touchmove', handleTouchMove, {passive: false});
+	  
       return () => {
         svgElement.removeEventListener('touchmove', handleTouchMove);
       };
     }
-  });
+  },[drawing, enrichment, scale]);
   
-  // zoom
-  const [scale, setScale] = useState(1); // initial scale
+  useEffect(() => {
+    const svgElement = svgRef.current;
+    if (svgElement) {
+      const handleTouchStart = (e) => {
+        e.preventDefault();
+		console.log("Handle touch start");
+		handleMouseDown(e);
+      };
+      svgElement.addEventListener('touchstart', handleTouchStart, {passive: false});
+	  
+      return () => {
+        svgElement.removeEventListener('touchstart', handleTouchStart);
+      };
+    }
+  },[controlType,]);
+  
+
 
   useEffect(() => {
     // set the transform-origin to the center of the svg
@@ -111,8 +126,11 @@ function DrawingBoard({ imageURL, brushWidth }) {
   // handle mouse down event
   const handleMouseDown = (e) => {
      // start drawing
-    
+    console.log("Drawing");
 	//alert(controlType);
+	if(drawing) {
+		return true;
+	}
     if (svgRef.current && controlType === Operations.Draw) {
       // get the bounding box of the svg element
 	  e.preventDefault();
@@ -167,6 +185,7 @@ function DrawingBoard({ imageURL, brushWidth }) {
   // handle mouse move event
   const handleMouseMove = (e) => {
     if (drawing) {
+		console.log("mousemove");
       // if drawing, add more points to the array with the offset subtracted
 	  const updated = updatePoints(enrichment,
 			[...enrichment.points, [(1/scale)*(e.clientX - offsetX), (1/scale)*( e.clientY - offsetY)],]);
@@ -176,7 +195,8 @@ function DrawingBoard({ imageURL, brushWidth }) {
 
   // handle mouse up event
   const handleMouseUp = (e) => {
-	if(!drawing) {
+	  console.log("handleMouseUp");
+	if(controlType !== Operations.Draw || !drawing) {
 		//redirect for touch events
 		console.log("Redirect to click move");
 		handleClick(e);
@@ -405,7 +425,6 @@ function DrawingBoard({ imageURL, brushWidth }) {
 			onMouseDown={handleMouseDown}
 			onMouseMove={handleMouseMove}
 			onMouseUp={handleMouseUp}
-			onTouchStart={handleMouseDown}
             onTouchEnd={handleMouseUp}
 			onClick={handleClick}
 			onMouseOver={handleHoverEnter}
