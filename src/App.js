@@ -152,6 +152,11 @@ function DrawingBoard({ imageURL, brushWidth }) {
       setEnrichment(updated);
     }
   };
+  
+  const handleTouchMove = (e) => {
+    e.preventDefault();
+    handleMouseMove(e.touches[0]);
+  };
 
   // handle mouse up event
   const handleMouseUp = () => {
@@ -181,7 +186,7 @@ function DrawingBoard({ imageURL, brushWidth }) {
   };
   
   const filterElements = (element, target) => {
-	  return element.id != target.id;
+	  return element.id !== target.id;
   }
   
   const handleHoverEnter = (e) => {
@@ -377,7 +382,7 @@ function DrawingBoard({ imageURL, brushWidth }) {
 			onMouseMove={handleMouseMove}
 			onMouseUp={handleMouseUp}
 			onTouchStart={handleMouseDown}
-            onTouchMove={handleMouseMove}
+            onTouchMove={handleTouchMove}
             onTouchEnd={handleMouseUp}
 			onClick={handleClick}
 			onMouseOver={handleHoverEnter}
