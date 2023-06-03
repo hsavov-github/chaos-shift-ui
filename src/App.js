@@ -8,6 +8,8 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import Draggable from 'react-draggable';
+import ImageUploader from'./components/ImageUploader';
+
 
 const Operations = Object.freeze({
 		Draw: Symbol("Draw"),
@@ -24,9 +26,8 @@ const Cursors = new Map([
   [Operations.ZoomOut, 'zoom-out'],
 ]);
 
-function DrawingBoard({ imageUrl, brushWidth }) {
+function DrawingBoard({ imageURL, brushWidth }) {
   const svgRef = useRef(null); // reference to the svg element
-  const schemaURL = imageUrl;
   const [enrichment, setEnrichment] = useState({
 		  paths: [],
 		  points: [],
@@ -310,7 +311,7 @@ function DrawingBoard({ imageUrl, brushWidth }) {
         canvas.height = bgImage.height;
 		ctx.drawImage(bgImage,0,0); // Or at whatever offset you like
 	  };
-	  bgImage.src = schemaURL;
+	  bgImage.src = imageURL;
       // create an image element to load the svg string
       let svgImg = new Image();
       svgImg.onload = function () {
@@ -379,7 +380,7 @@ function DrawingBoard({ imageUrl, brushWidth }) {
 			onMouseOver={handleHoverEnter}
             onMouseOut={handleHoverLeave}
 		  >
-		  <image href={schemaURL}  width="100%" height="100%"/>
+		  <image href={imageURL}  width="100%" height="100%"/>
 			{enrichment.paths.map((path) => (
 			  <path
 			    id={path.id}
@@ -430,9 +431,22 @@ function DrawingBoard({ imageUrl, brushWidth }) {
 }
 
 function App() {
+ const [image, setImage] = useState(null);
+ 
+ const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImage(event.target.result);
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+ 
   return (
     <div className="App">
-      <DrawingBoard imageUrl="/gallery/img1.png" brushWidth="8"/>
+	  <ImageUploader sharedImage={image} onImageChange={handleFileChange} />
+      <DrawingBoard imageURL={image}  brushWidth="8"/>
     </div>
   );
 }
