@@ -376,6 +376,9 @@ function DrawingBoard({ imageURL, brushWidth }) {
 			onMouseDown={handleMouseDown}
 			onMouseMove={handleMouseMove}
 			onMouseUp={handleMouseUp}
+			onTouchStart={handleMouseDown}
+            onTouchMove={handleMouseMove}
+            onTouchEnd={handleMouseUp}
 			onClick={handleClick}
 			onMouseOver={handleHoverEnter}
             onMouseOut={handleHoverLeave}
