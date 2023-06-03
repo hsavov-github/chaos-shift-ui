@@ -7,6 +7,7 @@ import { Button } from 'primereact/button';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
+import Draggable from 'react-draggable';
 
 const Operations = Object.freeze({
 		Draw: Symbol("Draw"),
@@ -53,6 +54,10 @@ function DrawingBoard({ imageUrl, brushWidth }) {
   const [cursorStyle, setCursorStyle] = useState('default');
   //Text
   //const [texts, setTexts] = useState([]); // initial array of texts and coordinates
+  const [text, setText] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editPosition, setEditPosition] = useState({ x: 0, y: 0 });
+  const inputRef = useRef();
  
   
   // zoom
@@ -85,10 +90,11 @@ function DrawingBoard({ imageUrl, brushWidth }) {
   // handle mouse down event
   const handleMouseDown = (e) => {
      // start drawing
-    e.preventDefault();
+    
 	//alert(controlType);
     if (svgRef.current && controlType === Operations.Draw) {
       // get the bounding box of the svg element
+	  e.preventDefault();
 	  setDrawing(true);
       let bbox = svgRef.current.getBoundingClientRect();
       // calculate the offset for the x and y coordinates
@@ -96,8 +102,19 @@ function DrawingBoard({ imageUrl, brushWidth }) {
       setOffsetX(bbox.x);
       setOffsetY(bbox.y);
     } else if (svgRef.current && controlType === Operations.Write) {
+		
+		initiateTyping(e);
+		/*
+		
 		const svg = svgRef.current;
-		const point = svg.createSVGPoint();
+		
+		const svgRect = event.currentTarget.getBoundingClientRect();
+		const x = event.clientX - svgRect.left;
+		const y = event.clientY - svgRect.top;
+
+		setTexts((prevTexts) => [...prevTexts, { x, y, text }]);
+		setText('');
+		//const point = svg.createSVGPoint();
 		point.x = e.clientX;
 		point.y = e.clientY;
 		const {x, y} = point.matrixTransform(svg.getScreenCTM().inverse());
@@ -107,6 +124,7 @@ function DrawingBoard({ imageUrl, brushWidth }) {
 		// update the texts state with the new text object and coordinates
 		//const updated = updateTexts(enrichment, [...enrichment.texts, {value, x, y, id }]);
 		setEnrichment(orig => updateTexts(orig, [...orig.texts, {value, x, y, id }]));
+		*/
 	} else if (svgRef.current && controlType === Operations.ZoomIn) {
 		zoomIn();
 	} else if (svgRef.current &&controlType === Operations.ZoomOut) {
@@ -153,7 +171,6 @@ function DrawingBoard({ imageUrl, brushWidth }) {
 		return;
 	}
 	if (target.tagName === "path") {
-	// Prompt the user to confirm deleting the path
 		const updated = enrichment.paths.filter( path => filterElements(path, target));
 		setEnrichment((orig) => updatePaths(orig, updated));
 	} else if (target.tagName === "text") {
@@ -196,6 +213,76 @@ function DrawingBoard({ imageUrl, brushWidth }) {
     );
   };
   //End of Drawing
+  
+  //text
+  const initiateTyping = (event) => {
+    if (!isEditing && event.target.tagName !== 'text') {
+      const svgRect = event.currentTarget.getBoundingClientRect();
+      const x = event.clientX - svgRect.left - 50;
+	  const y = event.clientY - svgRect.top - 25;
+
+      setEditPosition({ x, y });
+      setIsEditing(true);
+    }
+  };
+  
+  const handleInputBlur = (event) => {
+    const value = event.target.textContent;
+    if (value) {
+      setIsEditing(false);
+	  const id = calculateElementId(enrichment.texts);
+	  
+	  const x = editPosition.x;
+      const y = editPosition.y + 25;
+	  setEnrichment(orig => updateTexts(orig, [...orig.texts, {value, x, y, id }]));
+	  setText('');
+    }
+   };
+
+  const handleInputKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      event.target.blur();
+    }
+  };
+  
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+	
+	const draggedTextIndex = event.target.id;
+    if (draggedTextIndex !== null) {
+      //const svgRect = event.currentTarget.getBoundingClientRect();
+      //const x = event.target.attributes.x;//event.clientX - offsetX;// - svgRect.left;
+      //const y = event.target.attributes.y;// - svgRect.top;
+	  
+	  if(! (event.target.attributes.x || event.target.attributes.y )) {
+		  return;
+	  }
+	  
+	  var transformOffsetX = 0, transformOffsetY =0;
+	   // An SVGTransformList
+      if( event.target.transform && event.target.transform.baseVal > 0 ) {
+		var xforms = event.target.transform.baseVal;
+		var firstXForm = xforms.getItem(0);       // An SVGTransform
+		//if (firstXForm.type == SVGTransform.SVG_TRANSFORM_TRANSLATE){
+		transformOffsetX = firstXForm.matrix.e;
+	    transformOffsetY = firstXForm.matrix.f;
+		//    }
+		event.target.transform.baseVal.getItem(0).setTranslate(0,0);
+	  }
+	 const x = transformOffsetX + Number(event.target.attributes.x.nodeValue);//event.clientX - offsetX;// - svgRect.left;
+     const y = transformOffsetY + Number(event.target.attributes.y.nodeValue);// - svgRect.top;
+	 
+	  
+	  const updatedTexts = enrichment.texts.map((text) =>
+          text.id == draggedTextIndex ? { ...text, x:x, y:y } : text
+        );
+	  setEnrichment(orig => updateTexts(orig, updatedTexts));
+    }
+  };
+  
+  //end of text
 
   // save the svg as an svg file
   const saveSVG = () => {
@@ -278,7 +365,8 @@ function DrawingBoard({ imageUrl, brushWidth }) {
 			  </span>
 			</div>
 	  </div>
-		<div className="board" style={{width: "800px", height: "800px", zIndex: 0, cursor: cursorStyle}}>
+		<div id="boundary" className="board" width="800px"
+			height="800px" style={{width: "800px", height: "800px", zIndex: 0, cursor: cursorStyle}}>
 		  <svg
 			ref={svgRef}
 			width="800px"
@@ -312,8 +400,29 @@ function DrawingBoard({ imageUrl, brushWidth }) {
 			  />
 			)}
 			{enrichment.texts.map((text, i) => (
-            <text key={i} x={text.x} y={text.y} id={text.id} style={{fill: "black"}}>{text.value}</text>
+			<Draggable onStop={handleDrop} id={text.id} bounds="#boundary" >
+				<text key={i} x={text.x} y={text.y} id={text.id} style={{fill: "black", userSelect: 'none'}}>{text.value}</text>
+			</Draggable>
           ))}
+		  
+			  {isEditing && (
+			  <foreignObject x={editPosition.x} y={editPosition.y} width="100" height="50">
+				<div
+				  ref={inputRef}
+				  contentEditable
+				  suppressContentEditableWarning
+				  onBlur={handleInputBlur}
+				  onKeyDown={handleInputKeyDown}
+				  style={{
+					width: '100%',
+					height: '100%',
+					cursor: 'text'
+				  }}
+				>
+				<p> Your message comes here {text} </p>
+				</div>
+			  </foreignObject>
+			)}
 		  </svg>
 	  </div>
     </div>
