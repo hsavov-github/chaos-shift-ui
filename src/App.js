@@ -26,8 +26,10 @@ const Cursors = new Map([
   [Operations.ZoomOut, 'zoom-out'],
 ]);
 
-function DrawingBoard({ imageURL, brushWidth }) {
+function DrawingBoard({ brushWidth }) {
   const svgRef = useRef(null); // reference to the svg element
+  const [image, setImage] = useState(null);
+  const [imgSize, setImgSize] = useState({ width: 0, height: 0 });
   const [enrichment, setEnrichment] = useState({
 		  paths: [],
 		  points: [],
@@ -61,6 +63,9 @@ function DrawingBoard({ imageURL, brushWidth }) {
   const inputRef = useRef();
     // zoom
   const [scale, setScale] = useState(1); // initial scale
+  // menu
+  const [collapsed, setCollapsed] = useState(false);
+
  
  
   //touchscreen draw - hacky but allows passing passive:false 
@@ -333,6 +338,22 @@ function DrawingBoard({ imageURL, brushWidth }) {
   };
   
   //end of text
+  //change image
+   const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImage(event.target.result);
+		
+		const img = new Image();
+        img.src = reader.result;
+        img.onload = () => {
+          setImgSize({ width: img.width, height: img.height });
+        };
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
 
   // save the svg as an svg file
   const saveSVG = () => {
@@ -360,7 +381,7 @@ function DrawingBoard({ imageURL, brushWidth }) {
         canvas.height = bgImage.height;
 		ctx.drawImage(bgImage,0,0); // Or at whatever offset you like
 	  };
-	  bgImage.src = imageURL;
+	  bgImage.src = image;
       // create an image element to load the svg string
       let svgImg = new Image();
       svgImg.onload = function () {
@@ -398,30 +419,36 @@ function DrawingBoard({ imageURL, brushWidth }) {
   };
 
   return (
-    <div className="drawing-board">
-      <h1>Drawing Board</h1>
-	  <div className="controls" style={{position: "relative", zIndex: 1}}>
-		  <Button onClick={zoomIn}>Zoom in</Button>
-		  <Button onClick={zoomOut}>Zoom out</Button>
-		  <Button onClick={saveSVG}>Save as SVG</Button>
-          <Button onClick={savePNG}>Save as PNG</Button>
-		  <div>
-		     <span className="p-buttonset">
-				  <Button icon="pi pi-pencil" onClick={() => handlePickOperation(Operations.Draw)}/>
-				  <Button icon="pi pi-eraser" onClick={() => handlePickOperation(Operations.Delete)}/>
-				  <Button icon="pi pi-file-edit" onClick={() => handlePickOperation(Operations.Write)}/>
-				  <Button icon="pi pi-search-plus" onClick={() => handlePickOperation(Operations.ZoomIn)}/>
-				  <Button icon="pi pi-search-minus" onClick={() => handlePickOperation(Operations.ZoomOut)}/>
-			  </span>
-			</div>
+  <div className = "drawing=board">
+  <ImageUploader sharedImage={image} onImageChange={handleFileChange} />
+    <div className="main-panel" style={{ display: 'flex', flexDirection: 'row' }}>
+	
+	  <div className="controls" style={{ position: 'relative', zIndex: collapsed ? 0 : 1 }}>
+	    <Button onClick={() => setCollapsed(!collapsed)} icon={collapsed ? "pi pi-angle-double-up" : "pi pi-angle-double-up"}/>
+		
+		
+		 {!collapsed && (
+		 <div style={{ display: 'flex', flexDirection: 'column' }}>
+			  <Button icon="pi pi-search-plus" onClick={zoomIn}/>
+			  <Button icon="pi pi-search-minus" onClick={zoomOut}/>
+			  <Button icon="pi pi-cloud-download" onClick={saveSVG}/>
+			  <Button icon="pi pi-cloud-download" onClick={savePNG}/>
+			  
+					  <Button icon="pi pi-pencil" onClick={() => handlePickOperation(Operations.Draw)}/>
+					  <Button icon="pi pi-eraser" onClick={() => handlePickOperation(Operations.Delete)}/>
+					  <Button icon="pi pi-file-edit" onClick={() => handlePickOperation(Operations.Write)}/>
+					  <Button icon="pi pi-search-plus" onClick={() => handlePickOperation(Operations.ZoomIn)}/>
+					  <Button icon="pi pi-search-minus" onClick={() => handlePickOperation(Operations.ZoomOut)}/>
+		 </div>
+		)}	
+			
 	  </div>
-		<div id="boundary" className="board" width="800px"
-			height="800px" style={{width: "800px", height: "800px", zIndex: 0, cursor: cursorStyle}}>
+		<div id="boundary" className="board" style={{zIndex: 0, cursor: cursorStyle}}>
 		  <svg
 			ref={svgRef}
-			width="800px"
-			height="800px"
-			style={{ border: "1px solid black",transform: `scale(${scale})` }}
+			width={imgSize.width}
+			height={imgSize.height}
+			style={{transform: `scale(${scale})` }}
 			onMouseDown={handleMouseDown}
 			onMouseMove={handleMouseMove}
 			onMouseUp={handleMouseUp}
@@ -430,7 +457,7 @@ function DrawingBoard({ imageURL, brushWidth }) {
 			onMouseOver={handleHoverEnter}
             onMouseOut={handleHoverLeave}
 		  >
-		  <image href={imageURL}  width="100%" height="100%"/>
+		  <image href={image}  width="100%" height="100%"/>
 			{enrichment.paths.map((path) => (
 			  <path
 			    id={path.id}
@@ -477,26 +504,16 @@ function DrawingBoard({ imageURL, brushWidth }) {
 		  </svg>
 	  </div>
     </div>
+	</div>
   );
 }
 
 function App() {
- const [image, setImage] = useState(null);
- 
- const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setImage(event.target.result);
-      };
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
- 
+
   return (
     <div className="App">
-	  <ImageUploader sharedImage={image} onImageChange={handleFileChange} />
-      <DrawingBoard imageURL={image}  brushWidth="8"/>
+	  
+      <DrawingBoard  brushWidth="8"/>
     </div>
   );
 }
