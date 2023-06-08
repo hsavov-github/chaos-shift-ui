@@ -1,10 +1,11 @@
 import React, { useCallback, useState } from 'react';
-import { Button } from 'primereact/button';
-import { InputTextarea } from "primereact/inputtextarea";
-import { InputText } from "primereact/inputtext";
-import { Chips } from 'primereact/chips';
-import { Panel } from 'primereact/panel';
-import 'primereact/resources/themes/saga-blue/theme.css';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Unstable_Grid2'; 
+import Divider from '@mui/material/Divider';
+
 import ReviewBoard from './ReviewBoard';
 
 function FeedbackRequest() {
@@ -13,22 +14,22 @@ function FeedbackRequest() {
   const [description, setDescription] = useState('');
 
   return (
-    <div className="feedbackRequest">
-	<Panel header="Collect feedback" toggleable>
-		<div style={{ display: 'flex', flexDirection: 'row', padding:'4px', marginRight: '10px'}}>
-			<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }} >
-				<div style={{ marginBottom: '10px', maxWidth: '450px' }}>
-					<InputText cols={20} placeholder="Title" value={title} onChange={(e) => {setTitle(e.target.value)}} />
-				</div>
-				<Chips style={{marginBottom: '10px', maxWidth: '450px'}} placeholder="Recipients" value={emails} onChange={(e) => {setEmails(e.value)}} separator="," />
-				<div style={{ marginBottom: '10px' }}>
-					<InputTextarea placeholder="Description" onChange={(e) => {}} rows={10} cols={70} />
-				</div>
-			</div>	
+    <Box sx={{ flexGrow: 1}} className="feedbackRequest">
+		<Stack  direction="row" spacing={2}>
+				<Box sx={{ flexGrow: 1, margin: '50px',  width: 300}} className="feedbackRequest">
+					<Stack direction="column" spacing={2}>
+						<TextField label="Title" variant="standard" value={title} onChange={(e) => {setTitle(e.target.value)}} />
+						<TextField label="Recipients" variant="standard" value={emails} onChange={(e) => {setEmails(e.target.value)}} />
+						<TextField label="Description" variant="standard" onChange={(e) => {}} multiline rows={8}  />
+						<Stack direction="row" spacing={4}>
+						<Button> Save </Button>
+						<Button> Send </Button>
+					</Stack>
+					</Stack>
+				</Box >
 			<ReviewBoard />
-		</div>	
-	</Panel>
-    </div>
+		</Stack>
+    </Box>
   );
 }
 
