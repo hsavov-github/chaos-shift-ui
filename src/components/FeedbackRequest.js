@@ -65,7 +65,7 @@ function FeedbackRequest() {
     };
 	
   const previews = files.map(file => (
-	<Grid xs={2}>
+	<Grid xs={3}>
 		<div key={file.name}>
 		  <PreviewCard file ={file.preview} />
 		</div>
@@ -115,13 +115,10 @@ function FeedbackRequest() {
 		<Main open = {requestDrawerState} >
 			{ !requestDrawerState && <Fab onClick={(e) => toggleRequestDrawer(e, !requestDrawerState)}>
 					<KeyboardArrowDownIcon /> 
-			</Fab>}	 
-
-        <Box >			
-				<Stack spacing={6} direction="row">
+			</Fab>}	  
+				<Grid container spacing={4}>
 				 {previews}
-				</Stack >
-			</Box>
+				</Grid>
 		</Main>
 			
 	</Box>
