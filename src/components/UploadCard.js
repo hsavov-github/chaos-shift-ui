@@ -8,6 +8,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 
 export default function UploadCard({addFiles}) {
@@ -21,15 +22,12 @@ export default function UploadCard({addFiles}) {
   return (
   <div {...getRootProps()}>
         <input {...getInputProps()} />
-		<Card sx={{ maxWidth: 280, height: 360 }}>
-			<CardMedia
-				sx={{ height: 110 }}
-				image="/chaos-shift-ui/drag-drop.svg"
-				title="green iguana"
-			  />
+		<Card sx={{ width: 280, height: 240 }}>
+			
 		  <CardContent>
+			<FileUploadIcon/>
 			<Typography variant="body2" color="text.secondary">
-				Upload your image.
+				Upload your previews here
 			</Typography>
 		  </CardContent>
 		</Card>
