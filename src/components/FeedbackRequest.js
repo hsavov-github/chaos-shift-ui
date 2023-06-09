@@ -115,10 +115,13 @@ function FeedbackRequest() {
 		<Main open = {requestDrawerState} >
 			{ !requestDrawerState && <Fab onClick={(e) => toggleRequestDrawer(e, !requestDrawerState)}>
 					<KeyboardArrowDownIcon /> 
-			</Fab>}	  
-				<Grid container spacing={4}>
+			</Fab>}	 
+
+        <Box >			
+				<Stack spacing={6} direction="row">
 				 {previews}
-				</Grid>
+				</Stack >
+			</Box>
 		</Main>
 			
 	</Box>

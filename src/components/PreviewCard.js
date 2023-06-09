@@ -22,6 +22,8 @@ export default function PreviewCard({ file }) {
   return (
     <Card className="card" sx={{ 
 		maxWidth: 280,
+		minWidth: 280,
+		flexShrink: 0,
 		'&:hover': {
 		  transform: 'scale(1.2)',
 		} 
