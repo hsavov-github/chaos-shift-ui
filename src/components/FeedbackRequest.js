@@ -60,48 +60,31 @@ function FeedbackRequest() {
 
   return (
   <Box sx={{ flexGrow: 1}} className="feedbackRequest">
-  <Stack spacing={2}  >
-		  <Box>
-				<Fab onClick={(e) => toggleDropDrawer(e, !requestDrawerState)}>
-									<KeyboardArrowDownIcon /> 
-				</Fab>
-			<Drawer 
-				variant="persistent"
-				anchor="top"
-				open={dropDrawerState}>
-					<ReviewBoard />
-					<Divider />
-						 <Fab onClick={(e) => toggleDropDrawer(e, false)}>
-								<KeyboardArrowUpIcon /> 
-						</Fab>
-			</Drawer>	
-		 </Box>
-		
+
 		<Box>
 		  <Fab onClick={(e) => toggleRequestDrawer(e, !requestDrawerState)}>
-				<ChevronLeftIcon /> 
+				<KeyboardArrowDownIcon /> 
 		  </Fab>
 				<Drawer 
 					variant="persistent"
-					anchor="right"
+					anchor="top"
 					open={requestDrawerState}>
 					 <DrawerHeader>
 						 <Fab onClick={(e) => toggleRequestDrawer(e, false)}>
-								<ChevronRightIcon /> 
+								<KeyboardArrowUpIcon /> 
 						</Fab>
 					</DrawerHeader>
 					<Divider />
 					<FeedbackForm/>
 				</Drawer>
 		</Box>
-		<Grid container spacing={2}>
+		<Grid container spacing={4}>
 		<Grid xs={4}>
 			<UploadCard addFiles = {addFilesHandler}/> 
 		 </Grid>
 		 {previews}
 		</Grid>
 		
-	</Stack>		
 			
 	</Box>
   );

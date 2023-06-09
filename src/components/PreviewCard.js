@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 
+
 export default function PreviewCard({ file }) {
 	const navigate = useNavigate();
 	
@@ -19,9 +20,14 @@ export default function PreviewCard({ file }) {
   
   
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card className="card" sx={{ 
+		maxWidth: 280, 
+		'&:hover': {
+		  transform: 'scale(1.2)',
+		} 
+	}}>
       <CardMedia
-        sx={{ height: 140 }}
+        sx={{ height: 110 }}
         image={file}
         title="green iguana"
       />

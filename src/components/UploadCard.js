@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 
+
 export default function UploadCard({addFiles}) {
 	const onDrop = useCallback(acceptedFiles => {
 		addFiles(acceptedFiles);
@@ -20,9 +21,9 @@ export default function UploadCard({addFiles}) {
   return (
   <div {...getRootProps()}>
         <input {...getInputProps()} />
-		<Card sx={{ maxWidth: 345 }}>
+		<Card sx={{ maxWidth: 280, height: 360 }}>
 			<CardMedia
-				sx={{ height: 140 }}
+				sx={{ height: 110 }}
 				image="/chaos-shift-ui/drag-drop.svg"
 				title="green iguana"
 			  />
