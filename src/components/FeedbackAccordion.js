@@ -40,8 +40,8 @@ function FeedbackAccordion() {
   
   const [expanded, setExpanded] = React.useState(false);
 
-  const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
+  const anyFiles = () => {
+    return files.length > 0;
   };
 	
   const previews = files.map(file => (
@@ -71,7 +71,7 @@ function FeedbackAccordion() {
 				</Stack>
 			</AccordionDetails>
       </Accordion>
-	  { (files.length > 0) && <Accordion expanded={previewPanelState === true} onChange = {() => setRequestPanelState(!previewPanelState)}>
+	  { anyFiles() && <Accordion expanded={previewPanelState === true} onChange = {() => setPreviewPanelState(!previewPanelState)}>
 			<AccordionSummary
 			  expandIcon={<ExpandMoreIcon />}
 			  aria-controls="panel2bh-content"
