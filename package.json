@@ -22,6 +22,8 @@
     "react-dom": "^18.2.0",
     "react-draggable": "^4.4.5",
     "react-dropzone": "^14.2.3",
+    "react-material-ui-carousel": "^3.4.2",
+    "react-multi-carousel": "^2.8.4",
     "react-router-dom": "^6.11.2",
     "react-scripts": "5.0.1",
     "react-svg-pan-zoom": "^3.12.1",

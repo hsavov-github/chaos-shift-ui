@@ -25,7 +25,7 @@ export default function PreviewCard({ file }) {
 		minWidth: 280,
 		flexShrink: 0,
 		'&:hover': {
-		  transform: 'scale(1.2)',
+		  transform: 'scale(1.05)',
 		} 
 	}}>
       <CardMedia

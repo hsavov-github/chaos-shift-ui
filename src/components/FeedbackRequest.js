@@ -14,6 +14,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import UploadCard from './UploadCard';
 import PreviewCard from './PreviewCard';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css'
 
 
 import ReviewBoard from './ReviewBoard';
@@ -64,12 +66,30 @@ function FeedbackRequest() {
 		setDropDrawerState(isOpen);
     };
 	
+  const responsive = {
+	  superLargeDesktop: {
+		// the naming can be any, depends on you.
+		breakpoint: { max: 4000, min: 3000 },
+		items: 5
+	  },
+	  desktop: {
+		breakpoint: { max: 3000, min: 1024 },
+		items: 3
+	  },
+	  tablet: {
+		breakpoint: { max: 1024, min: 464 },
+		items: 2
+	  },
+	  mobile: {
+		breakpoint: { max: 464, min: 0 },
+		items: 1
+	  }
+  };
+	
   const previews = files.map(file => (
-	<Grid xs={3}>
-		<div key={file.name}>
-		  <PreviewCard file ={file.preview} />
-		</div>
-	</Grid>
+	<Box sx= {{padding: '20px'}}>
+		  <PreviewCard  key={file.name} file ={file.preview} />
+	</Box>
   ));
 	
   const DrawerHeader = styled('div')(({ theme }) => ({
@@ -116,9 +136,9 @@ function FeedbackRequest() {
 			{ !requestDrawerState && <Fab onClick={(e) => toggleRequestDrawer(e, !requestDrawerState)}>
 					<KeyboardArrowDownIcon /> 
 			</Fab>}	  
-				<Grid container spacing={4}>
+				<Carousel responsive={responsive}>
 				 {previews}
-				</Grid>
+				</Carousel>
 		</Main>
 			
 	</Box>
