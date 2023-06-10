@@ -27,7 +27,7 @@ export default function UploadCard({addFiles}) {
 		  <CardContent>
 			<FileUploadIcon/>
 			<Typography variant="body2" color="text.secondary">
-				Upload your previews here
+				Upload your files here.
 			</Typography>
 		  </CardContent>
 		</Card>

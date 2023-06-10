@@ -7,6 +7,9 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import { CardActionArea } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 
 
 export default function PreviewCard({ file }) {
@@ -28,21 +31,24 @@ export default function PreviewCard({ file }) {
 		  transform: 'scale(1.05)',
 		} 
 	}}>
-      <CardMedia
-        sx={{ height: 100 }}
-        image={file}
-        title="upload file"
-      />
-      <CardContent>
+	<CardContent>
+	
         <Typography variant="body7" color="text.secondary">
-         <TextField label="Title" onChange={(e) => {}} variant="standard" />
-		 <TextField label="Description" onChange={(e) => {}} variant="standard" multiline  rows={4} />
+			<IconButton onClick={e => {}}>
+                          <HighlightOffOutlinedIcon />
+               </IconButton>
+			 <TextField size="small" label="Title" onChange={(e) => {}} variant="standard" />
+			 <TextField size="small" label="Description" onChange={(e) => {}} variant="standard" multiline  rows={4} />
         </Typography>
-      </CardContent>
-      <CardActions>
-        <Button onClick = {handleThumbnailClick}>Edit </Button>
-		<Button> Delete</Button>
-      </CardActions>
+     </CardContent>
+	
+	<CardActionArea onClick = {handleThumbnailClick}>
+		  <CardMedia
+			sx={{ height: 100 }}
+			image={file}
+			title="upload file"
+		  />
+	  </CardActionArea>
     </Card>
   );
 }
