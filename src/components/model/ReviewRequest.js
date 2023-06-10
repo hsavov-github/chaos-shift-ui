@@ -27,3 +27,14 @@ export function getDummyRequests () {
 	return elements;
 	
 }
+
+
+export function getDummyRequestByTitle ( title) {
+	
+	const elements = getDummyRequests().filter(request => {
+			  return request.title === title;
+		  })
+		
+	return elements[0];
+	
+}

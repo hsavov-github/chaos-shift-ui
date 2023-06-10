@@ -1,4 +1,5 @@
 import React, { useCallback, useState, KeyboardEvent } from 'react';
+import { useSearchParams } from "react-router-dom";
 import { styled, useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
 import Fab from '@mui/material/Fab';
@@ -13,14 +14,19 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import UploadCard from './UploadCard';
 import PreviewCard from './PreviewCard';
+import {responsiveScreen} from './utils/ScreenSize';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css'
 
 
 import ReviewBoard from './ReviewBoard';
 import FeedbackForm from './FeedbackForm';
+import {getDummyRequestByTitle, ReviewRequest} from './model/ReviewRequest';
 
 function FeedbackAccordion() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const reviewBody = getDummyRequestByTitle(searchParams.get("reviewReqId"));
+  const [reviewRequest, setReviewRequest] = useState(reviewBody ? reviewBody : new ReviewRequest('','',''))
   
   const [files, setFiles] = useState([]);
   const [requestPanelState, setRequestPanelState] = useState(true);
@@ -37,42 +43,12 @@ function FeedbackAccordion() {
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-
-	
-  const responsive = {
-	  superLargeDesktop: {
-		// the naming can be any, depends on you.
-		breakpoint: { max: 4000, min: 3000 },
-		items: 5
-	  },
-	  desktop: {
-		breakpoint: { max: 3000, min: 1024 },
-		items: 3
-	  },
-	  tablet: {
-		breakpoint: { max: 1024, min: 464 },
-		items: 2
-	  },
-	  mobile: {
-		breakpoint: { max: 464, min: 0 },
-		items: 1
-	  }
-  };
 	
   const previews = files.map(file => (
 	<Box sx= {{padding: '20px'}}>
 		  <PreviewCard  key={file.name} file ={file.preview} />
 	</Box>
-  ));
-	
-  const DrawerHeader = styled('div')(({ theme }) => ({
-	  display: 'flex',
-	  alignItems: 'center',
-	  padding: theme.spacing(0, 1),
-	  // necessary for content to be below app bar
-	  ...theme.mixins.toolbar,
-	  justifyContent: 'flex-start',
-	}));
+  ));	
 
   return (
   <Box sx={{
@@ -91,7 +67,7 @@ function FeedbackAccordion() {
 			<AccordionDetails>
 				 <Stack direction="row" spacing={2}>
 							<UploadCard addFiles = {addFilesHandler}/> 
-							<FeedbackForm/>
+							<FeedbackForm request = {reviewRequest} />
 				</Stack>
 			</AccordionDetails>
       </Accordion>
@@ -102,7 +78,7 @@ function FeedbackAccordion() {
 			  id="panel2bh-header"
 			/>
 			<AccordionDetails>
-				<Carousel responsive={responsive}>
+				<Carousel responsive={responsiveScreen}>
 				 {previews}
 				</Carousel>
 			</AccordionDetails>

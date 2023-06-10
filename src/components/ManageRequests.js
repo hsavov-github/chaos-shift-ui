@@ -12,10 +12,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { useNavigate } from 'react-router-dom';
 
 import {getDummyRequests} from './model/ReviewRequest';
 
 function ManageRequests() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [filtered, setFiltered] = useState(getDummyRequests());
   
@@ -45,6 +47,10 @@ function ManageRequests() {
 	  }
   }
   
+  const handleRowClick = (e, title) => {
+	  navigate('/chaos-shift-ui/request?reviewReqId=' + title);
+  }
+  
   const searchField = (params) => {
 	  return <TextField  {...params}  label="Search" variant="outlined" value={search} />
   }
@@ -67,6 +73,7 @@ function ManageRequests() {
 				<TableRow
 				  key={row.title}
 				  sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { backgroundColor: '#dde6e4'}  }}
+				  onClick = {(e) => handleRowClick(e, row.title)}
 				>
 				  <TableCell component="th" scope="row">
 					{row.title}
