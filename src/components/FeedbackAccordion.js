@@ -46,7 +46,7 @@ function FeedbackAccordion() {
 	
   const previews = files.map(file => (
 	<Box sx= {{padding: '20px'}}>
-		  <PreviewCard  key={file.name} file ={file.preview} />
+		  <PreviewCard  key={file.name} file ={file} />
 	</Box>
   ));	
 
@@ -57,7 +57,7 @@ function FeedbackAccordion() {
 			  borderRadius: 2,
 			  p: 2}} className="feedbackRequest">
 			  
-		<Accordion expanded={requestPanelState === true} onChange = {() => setRequestPanelState(!requestPanelState)}>
+		<Accordion expanded={requestPanelState} onChange = {() => setRequestPanelState(!requestPanelState)}>
 			<AccordionSummary
 			  expandIcon={<ExpandMoreIcon />}
 			  aria-controls="panel1bh-content"
@@ -71,7 +71,7 @@ function FeedbackAccordion() {
 				</Stack>
 			</AccordionDetails>
       </Accordion>
-	  { anyFiles() && <Accordion expanded={previewPanelState === true} onChange = {() => setPreviewPanelState(!previewPanelState)}>
+	  { anyFiles() && <Accordion expanded={previewPanelState} onChange = {() => setPreviewPanelState(!previewPanelState)}>
 			<AccordionSummary
 			  expandIcon={<ExpandMoreIcon />}
 			  aria-controls="panel2bh-content"

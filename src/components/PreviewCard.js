@@ -18,7 +18,7 @@ export default function PreviewCard({ file }) {
 
 	const handleThumbnailClick = (e) => {
 		//history.push('/second-page', { inputValue }});
-		 navigate('/chaos-shift-ui/drawing');
+		 navigate('/chaos-shift-ui/drawing',  { state: { data: file } });
 	  };
   
   
@@ -45,7 +45,7 @@ export default function PreviewCard({ file }) {
 	<CardActionArea onClick = {handleThumbnailClick}>
 		  <CardMedia
 			sx={{ height: 100 }}
-			image={file}
+			image={file.preview}
 			title="upload file"
 		  />
 	  </CardActionArea>

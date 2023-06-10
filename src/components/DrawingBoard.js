@@ -9,6 +9,7 @@ import Operations from'./OperationsState';
 import MenuBar from'./MenuBar';
 import ImageUploader from'./ImageUploader';
 import { saveSVG, savePNG } from './FileExport';
+import {useLocation} from 'react-router-dom';
 
 const Cursors = new Map([
   [Operations.Draw, 'crosshair'],
@@ -20,7 +21,9 @@ const Cursors = new Map([
 
 function DrawingBoard({ brushWidth }) {
   const svgRef = useRef(null); // reference to the svg element
-  const [image, setImage] = useState(null);
+  const location = useLocation()
+  const passedImage = location.state && location.state.data ? location.state.data : null;
+  const [image, setImage] = useState(loadImageFromFile(passedImage));
   const [imgSize, setImgSize] = useState({ width: 0, height: 0 });
   const [enrichment, setEnrichment] = useState({
 		  paths: [],
@@ -311,7 +314,16 @@ function DrawingBoard({ brushWidth }) {
   //change image
    const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
+      loadImageFromFile(e.target.files[0])
+    }
+  };
+  
+  function loadImageFromFile(file) {
+	  
+	  if(!file) {
+		  return null;
+	  }
+	  const reader = new FileReader();
       reader.onload = (event) => {
         setImage(event.target.result);
 		
@@ -321,9 +333,8 @@ function DrawingBoard({ brushWidth }) {
           setImgSize({ width: img.width, height: img.height });
         };
       };
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
+      reader.readAsDataURL(file);
+  }
   
   
   const handlePickOperation = (operationType) => {
