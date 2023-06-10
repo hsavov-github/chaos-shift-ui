@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/chaos-shift-ui/static/css/main.24a6536a.css",
-    "main.js": "/chaos-shift-ui/static/js/main.3f5ac530.js",
+    "main.js": "/chaos-shift-ui/static/js/main.e414983d.js",
     "static/js/787.0a05739b.chunk.js": "/chaos-shift-ui/static/js/787.0a05739b.chunk.js",
     "static/media/primeicons.svg": "/chaos-shift-ui/static/media/primeicons.e1441b135b3ca9ad643c.svg",
     "static/media/primeicons.eot": "/chaos-shift-ui/static/media/primeicons.d44157bdfa026dc877af.eot",
@@ -15,11 +15,11 @@
     "static/media/logo.svg": "/chaos-shift-ui/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/chaos-shift-ui/index.html",
     "main.24a6536a.css.map": "/chaos-shift-ui/static/css/main.24a6536a.css.map",
-    "main.3f5ac530.js.map": "/chaos-shift-ui/static/js/main.3f5ac530.js.map",
+    "main.e414983d.js.map": "/chaos-shift-ui/static/js/main.e414983d.js.map",
     "787.0a05739b.chunk.js.map": "/chaos-shift-ui/static/js/787.0a05739b.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.24a6536a.css",
-    "static/js/main.3f5ac530.js"
+    "static/js/main.e414983d.js"
   ]
 }
