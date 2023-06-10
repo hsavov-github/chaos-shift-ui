@@ -5,12 +5,19 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 
-
-import ReviewBoard from './ReviewBoard';
+import {getDummyRequests} from './model/ReviewRequest';
 
 function ManageRequests() {
   const [search, setSearch] = useState('');
+  const [filtered, setFiltered] = useState(getDummyRequests());
   
   const [includeActive, setIncludeActive] = useState(true);
   const [includeSaved, setIncludeSaved] = useState(true);
@@ -24,28 +31,68 @@ function ManageRequests() {
 	 return isActive ? 'outlined' : 'filled'
   }
   
-  const searchField = (params) => {
-	  return <TextField  {...params}  label="Search" variant="outlined" value={search} onChange={(e) => {setSearch(e.target.value)}} />
+  const filterProjects = (e, value) => {
+	  const updated = value;
+	  const fullList = getDummyRequests();
+	  setSearch(updated);
+	  if(updated.length === 0 ) {
+		  setFiltered(fullList);
+	  } else {
+		  const newRows = fullList.filter( request => {
+			  return request.title.includes(updated);
+		  });
+		  setFiltered(newRows);
+	  }
   }
   
-  const exampleProjects = [
-  { title: 'The Shanghai Redemption', year: 1994 },
-  { title: 'The Poohfather', year: 1972 },
-  { title: 'The Godfather: Part II', year: 1974 },
-  { title: 'The Chineese Knight', year: 2008 },
-  { title: '12 Angry Chineesem Men', year: 1957 },
-  { title: "Xin's List", year: 1993 },
-  { title: 'Chineese Fiction', year: 1994 }
-  ]
+  const searchField = (params) => {
+	  return <TextField  {...params}  label="Search" variant="outlined" value={search} />
+  }
+  
+  const exampleProjects = getDummyRequests();
+  
+  
+
+   const table = (
+	   <TableContainer component={Paper}>
+		  <Table sx={{ minWidth: 350 }} aria-label="simple table">
+			<TableHead>
+			  <TableRow sx={{  backgroundColor: '#dde6eb' }}>
+				<TableCell>Review</TableCell>
+				<TableCell align="right">Status</TableCell>
+			  </TableRow>
+			</TableHead>
+			<TableBody>
+			  {filtered.map((row) => (
+				<TableRow
+				  key={row.title}
+				  sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { backgroundColor: '#dde6e4'}  }}
+				>
+				  <TableCell component="th" scope="row">
+					{row.title}
+				  </TableCell>
+				  <TableCell align="right">{row.status}</TableCell>
+				  
+				</TableRow>
+			  ))}
+			</TableBody>
+		  </Table>
+    </TableContainer>
+   )
+
 
   return (
 
-	<Box sx={{ flexGrow: 1, margin: '50px',  width: 300}} className="ManageRequests">
+	<Box sx={{
+			  boxShadow: 3,
+			  borderRadius: 2,
+			  p: 2}} className="ManageRequests">
 		<Stack direction="column" spacing={2}>
 		
 		<Autocomplete
 			id="free-solo-demo"
 			freeSolo
+			onChange={(e, value) => {filterProjects(e, value)}}
 			options={exampleProjects.map((option) => option.title)}
 			renderInput={searchField} />
 			
@@ -53,7 +100,8 @@ function ManageRequests() {
 				 <Chip label="Saved" variant={isEnabled(includeActive)} onClick={() => setIncludeActive(!includeActive)} />
 				 <Chip label="Active" variant={isEnabled(includeSaved)} onClick={() => setIncludeSaved(!includeSaved)} />
 				 <Chip label="Approved" variant={isEnabled(includeApproved)} onClick={() => setIncludeApproved(!includeApproved)} />
-			</Stack>		
+			</Stack>
+			{table}			
 		</Stack>
 	</Box >
 

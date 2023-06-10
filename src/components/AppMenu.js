@@ -36,7 +36,7 @@ function AppMenu() {
   
   const handleRedirect = (e, page) => {
 	  if(page === 'Home') { navigate('/chaos-shift-ui/');}
-	  if(page === 'Review request') { navigate('/chaos-shift-ui/request');}
+	  if(page === 'Request review') { navigate('/chaos-shift-ui/request');}
 	  if(page === 'Drawing board') { navigate('/chaos-shift-ui/drawing');}
 		  
     setAnchorElNav(null);
