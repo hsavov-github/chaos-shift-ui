@@ -1,9 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
+import Box from '@mui/material/Box';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -22,15 +20,12 @@ export default function UploadCard({addFiles}) {
   return (
   <div {...getRootProps()}>
         <input {...getInputProps()} />
-		<Card sx={{ width: 280, height: 240 }}>
-			
-		  <CardContent>
+		<Box sx={{ maxWidth: '150px', '&:hover': {backgroundColor: 'gray'} }}>
 			<FileUploadIcon/>
 			<Typography variant="body2" color="text.secondary">
 				Upload your files here.
 			</Typography>
-		  </CardContent>
-		</Card>
+		</Box>
 	</div>
   );
 }

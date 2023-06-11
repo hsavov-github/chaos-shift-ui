@@ -4,6 +4,7 @@
   "homepage": "https://hsavov-github.github.io/chaos-shift-ui",
   "private": true,
   "dependencies": {
+    "@atlaskit/inline-edit": "^12.3.3",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@material-ui/core": "^4.12.4",
@@ -19,6 +20,7 @@
     "primereact": "^9.5.0",
     "react": "^18.2.0",
     "react-color": "^2.19.3",
+    "react-contenteditable": "^3.3.7",
     "react-dom": "^18.2.0",
     "react-draggable": "^4.4.5",
     "react-dropzone": "^14.2.3",

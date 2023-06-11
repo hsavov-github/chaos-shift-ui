@@ -23,25 +23,7 @@ export default function PreviewCard({ file }) {
   
   
   return (
-    <Card className="card" sx={{ 
-		maxWidth: 280,
-		minWidth: 280,
-		flexShrink: 0,
-		'&:hover': {
-		  transform: 'scale(1.05)',
-		} 
-	}}>
-	<CardContent>
-	
-        <Typography variant="body7" color="text.secondary">
-			<IconButton onClick={e => {}}>
-                          <HighlightOffOutlinedIcon />
-               </IconButton>
-			 <TextField size="small" label="Title" onChange={(e) => {}} variant="standard" />
-			 <TextField size="small" label="Description" onChange={(e) => {}} variant="standard" multiline  rows={4} />
-        </Typography>
-     </CardContent>
-	
+    <Card className="card">
 	<CardActionArea onClick = {handleThumbnailClick}>
 		  <CardMedia
 			sx={{ height: 100 }}

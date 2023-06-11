@@ -21,6 +21,7 @@ import 'react-multi-carousel/lib/styles.css'
 
 import ReviewBoard from './ReviewBoard';
 import FeedbackForm from './FeedbackForm';
+import PreviewTable from './PreviewTable';
 import {getDummyRequestByTitle, ReviewRequest} from './model/ReviewRequest';
 
 function FeedbackAccordion() {
@@ -31,6 +32,7 @@ function FeedbackAccordion() {
   const [files, setFiles] = useState([]);
   const [requestPanelState, setRequestPanelState] = useState(true);
   const [previewPanelState, setPreviewPanelState] = useState(true);
+  const [previewTableState, setPreviewTableState] = useState(true);
 
   const addFilesHandler = ( acceptedFiles)=> {
     setFiles(acceptedFiles.map(file => Object.assign(file, {
@@ -54,8 +56,7 @@ function FeedbackAccordion() {
   <Box sx={{
 			  bgcolor: '#dde6eb',
 			  boxShadow: 3,
-			  borderRadius: 2,
-			  p: 2}} className="feedbackRequest">
+			  borderRadius: 2 }} className="feedbackRequest">
 			  
 		<Accordion expanded={requestPanelState} onChange = {() => setRequestPanelState(!requestPanelState)}>
 			<AccordionSummary
@@ -66,7 +67,6 @@ function FeedbackAccordion() {
 			</AccordionSummary>
 			<AccordionDetails>
 				 <Stack direction="row" spacing={2}>
-							<UploadCard addFiles = {addFilesHandler}/> 
 							<FeedbackForm request = {reviewRequest} />
 				</Stack>
 			</AccordionDetails>
@@ -84,6 +84,16 @@ function FeedbackAccordion() {
 			</AccordionDetails>
       </Accordion> 
 	  }	  
+	  <Accordion expanded={previewTableState} onChange = {() => setPreviewTableState(!previewTableState)}>
+			<AccordionSummary
+			  expandIcon={<ExpandMoreIcon />}
+			  aria-controls="panel2bh-content"
+			  id="panel2bh-header"
+			/>
+			<AccordionDetails>
+				<PreviewTable/>
+			</AccordionDetails>
+      </Accordion> 
 	</Box>
   );
 }
