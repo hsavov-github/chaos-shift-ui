@@ -23,12 +23,12 @@ function createData(title, status) {
     status,
     comments: [
       {
-		title:'Do stuff',
+		title:'Some remark',
         date: '2020-01-05',
         status: 'active',
       },
       {
-		title:'Do other stuff',
+		title:'Another remark',
         date: '2020-01-02',
         status: 'resolved',
       },
@@ -77,7 +77,7 @@ function Row(props) {
                   {row.comments.map((commentRow) => (
                     <TableRow key={commentRow.content}>
                       <TableCell component="th" scope="row">
-                        {commentRow.date}
+                        {commentRow.title}
                       </TableCell>
                       <TableCell>{commentRow.date}</TableCell>
                       <TableCell>{commentRow.status}</TableCell>

@@ -14,14 +14,14 @@ export class ReviewRequest {
 }
 
 export function getDummyRequests () {
-	const dummyRequest = new ReviewRequest('The Shanghai Redemption', 'Dummy Description', 'active' );
+	const dummyRequest = new ReviewRequest('Shanghai Tower ', 'Dummy Description', 'active' );
 	const elements = [dummyRequest, 
-		dummyRequest.withTitle('The Poohfather'),
-		dummyRequest.withTitle('The Poohfather: Part II'),
-		dummyRequest.withTitle('The Chineese Knight'),
-		dummyRequest.withTitle('12 Angry Chineese Men'),
-		dummyRequest.withTitle("Xin's List"),
-		dummyRequest.withTitle('Yulechka Fiction')
+		dummyRequest.withTitle('Ocean Tower Shanghai'),
+		dummyRequest.withTitle('The Bund Shanghai Master Plan'),
+		dummyRequest.withTitle('Pudong Villa Passive House'),
+		dummyRequest.withTitle('Sofia Airport'),
+		dummyRequest.withTitle('National Art Gallery Renovation Sofia'),
+		dummyRequest.withTitle('Burj Khalifa Dubai')
 		]
 		
 	return elements;
