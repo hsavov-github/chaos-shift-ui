@@ -7,8 +7,29 @@ export class ReviewRequest {
 	//this.previews = previews;
   }
   
-  withTitle( newTitle) {
+  withTitle(newTitle) {
 	  return { ...this, title: newTitle}
+  }
+  
+  withDescription(newDescription) {
+	  return {...this, description: newDescription}
+  }
+  
+  withStatus(newStatus) {
+	  return {...this, status: newStatus}
+  }
+  
+  withPreviews(newPreviews) {
+	  return {...this, previews: newPreviews}
+  }
+  
+  withNewPreview(newPreview) {
+	  if(this.previews) {
+		  const newPreviews = [...this.previews, newPreview];
+		  return this.withPreviews(newPreviews);
+	  } else {
+		  return {...this, previews: [newPreview]}
+	  }
   }
   
 }

@@ -6,13 +6,19 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2'; 
 import Divider from '@mui/material/Divider';
 import InlineEdit from '@atlaskit/inline-edit';
+import {handleSubmit} from './services/ReviewConnector'
 
 import ReviewBoard from './ReviewBoard';
 
 function FeedbackForm({request}) {
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState( request?request: '');
   const [emails, setEmails] = useState('');
   const [description, setDescription] = useState('');
+  
+  const handleClick = () => {
+	  handleSubmit({title:title, description:description});
+  }
+  
   
   /* inline example - use later
 			<InlineEdit
@@ -35,13 +41,13 @@ function FeedbackForm({request}) {
 
 	<Box sx={{ flexGrow: 1}} className="FeedbackForm">
 		<Stack direction="column">
-			<TextField size="small" label="Title" variant="standard" value={request.title} onChange={(e) => {setTitle(e.target.value)}} />	
+			<TextField size="small" label="Title" variant="standard" value={title} onChange={(e) => {setTitle(e.target.value)}} />	
 			<TextField size="small" label="Recipients" variant="standard" value={emails} onChange={(e) => {setEmails(e.target.value)}} />
 			
 			
-			<TextField size="small" label="Description" variant="standard" onChange={(e) => {}} multiline rows={8}  />
+			<TextField size="small" label="Description" variant="standard" value={description} onChange={(e) => {setDescription(e.target.value)}} multiline rows={8}  />
 			<Stack direction="row" spacing={4}>
-				<Button> Save </Button>
+				<Button onClick={() => handleClick()}> Save </Button>
 				<Button> Send </Button>
 			</Stack>
 		</Stack>
