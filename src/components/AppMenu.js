@@ -12,13 +12,14 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import AdbIcon from '@mui/icons-material/Adb';	
+import {useAuth} from './services/UseAuth';
 
 const pages = ['Home', 'Request review', 'Drawing board'];
-const settings = ['Profile', 'Logout'];
 
 function AppMenu() {
   const navigate = useNavigate();
+  const auth = useAuth();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   
@@ -157,11 +158,13 @@ function AppMenu() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                <MenuItem key='userProfile' onClick={handleCloseUserMenu}>
+                  <Typography textAlign="center">Profile</Typography>
                 </MenuItem>
-              ))}
+				<MenuItem key='logOut' onClick={() => { auth.logout(); navigate("/chaos-shift-ui/login"); handleCloseUserMenu();}}>
+                  <Typography textAlign="center">Sign out</Typography>
+                </MenuItem>
+              
             </Menu>
           </Box>
         </Toolbar>
