@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "homepage": "https://hsavov-github.github.io/chaos-shift-ui",
   "private": true,
-  "proxy":"http://localhost:8080",
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "@atlaskit/inline-edit": "^12.3.3",
     "@emotion/react": "^11.11.1",
@@ -17,6 +17,7 @@
     "@testing-library/user-event": "^13.5.0",
     "color": "^4.2.3",
     "file-saver": "^2.0.5",
+    "js-cookie": "^3.0.5",
     "primeicons": "^6.0.1",
     "primereact": "^9.5.0",
     "react": "^18.2.0",
