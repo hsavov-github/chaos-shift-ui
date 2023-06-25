@@ -6,17 +6,19 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2'; 
 import Divider from '@mui/material/Divider';
 import InlineEdit from '@atlaskit/inline-edit';
-import {handleSubmit} from './services/ReviewConnector'
+import {useAuth} from "./services/UseAuth";
+import {handleSubmit} from './services/ReviewConnector';
 
 import ReviewBoard from './ReviewBoard';
 
 function FeedbackForm({request}) {
-  const [title, setTitle] = useState( request?request: '');
+  const [title, setTitle] = useState( request?request.title: '');
   const [emails, setEmails] = useState('');
   const [description, setDescription] = useState('');
+  const auth = useAuth();
   
   const handleClick = () => {
-	  handleSubmit({title:title, description:description});
+	  handleSubmit({title:title, description:description}, auth);
   }
   
   
