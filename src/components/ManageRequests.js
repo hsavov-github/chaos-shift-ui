@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -13,13 +13,22 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useNavigate } from 'react-router-dom';
+import {useAuth} from "./services/UseAuth";
+import {loadReviews} from './services/ReviewConnector';
 
 import {getDummyRequests} from './model/ReviewRequest';
 
 function ManageRequests() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
+  const auth = useAuth();
+  const [collected, setCollected] = useState(getDummyRequests());
   const [filtered, setFiltered] = useState(getDummyRequests());
+  
+  useEffect(() => {
+	const result = loadReviews(null, auth);
+	result.then( (value) => {setCollected(value); setFiltered(value)});
+  },[])
   
   const [includeActive, setIncludeActive] = useState(true);
   const [includeSaved, setIncludeSaved] = useState(true);
@@ -35,16 +44,15 @@ function ManageRequests() {
   
   const filterProjects = (e, value) => {
 	  const updated = value;
-	  const fullList = getDummyRequests();
-	  setSearch(updated);
-	  if(updated.length === 0 ) {
-		  setFiltered(fullList);
-	  } else {
-		  const newRows = fullList.filter( request => {
-			  return request.title.includes(updated);
-		  });
-		  setFiltered(newRows);
-	  }
+	  loadReviews(null, auth).then( fullList => {
+		  setSearch(updated);
+		  if(!updated || (updated.length === 0)) {
+			  setFiltered(fullList);
+		  } else {
+			  const newRows = fullList.filter( request => request.title.includes(updated));
+			  setFiltered(newRows);
+		  }
+	  });
   }
   
   const handleRowClick = (e, title) => {
@@ -54,10 +62,6 @@ function ManageRequests() {
   const searchField = (params) => {
 	  return <TextField  {...params}  label="Search" variant="outlined" value={search} />
   }
-  
-  const exampleProjects = getDummyRequests();
-  
-  
 
    const table = (
 	   <TableContainer component={Paper}>
@@ -69,7 +73,7 @@ function ManageRequests() {
 			  </TableRow>
 			</TableHead>
 			<TableBody>
-			  {filtered.map((row) => (
+			  {(filtered && filtered.length > 0) && filtered.map((row) => (
 				<TableRow
 				  key={row.title}
 				  sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { backgroundColor: '#dde6e4'}  }}
@@ -100,7 +104,7 @@ function ManageRequests() {
 			id="free-solo-demo"
 			freeSolo
 			onChange={(e, value) => {filterProjects(e, value)}}
-			options={exampleProjects.map((option) => option.title)}
+			options={collected.map((option) => option.title)}
 			renderInput={searchField} />
 			
 			<Stack direction="row" spacing={2}>

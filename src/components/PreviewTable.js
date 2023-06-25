@@ -16,6 +16,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import UploadCard from './UploadCard';
 import PreviewCard from './PreviewCard';
+import {useAuth} from "./services/UseAuth";
 import {uploadFiles} from './services/ReviewConnector';
 
 function createData(title, status) {
@@ -123,9 +124,10 @@ const model = [
 
 export default function PreviewTable() {
   const [rows, setRows] = useState(model);
+  const auth = useAuth();
   
   function addRows(files) {
-	uploadFiles(files);
+	uploadFiles(files, auth);
 	const rowsToAdd = files.map(file => {
 		var row = createData('Set title', 'Active');
 		row.file = file;
