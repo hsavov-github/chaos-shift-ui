@@ -42,7 +42,28 @@ export const handleSubmit = (data, auth) => {
 	  }
       const result = await response.json();
 	  return result;
-   }; 
+   };
+   
+    export async function loadReview(id, auth) {
+      //e.preventDefault();
+      const response = await fetch('http://localhost:8080/reviews/' + encodeURIComponent(id), {
+         method: 'GET',
+         headers: {
+			'Authorization': 'Bearer ' + auth.token,
+			'Access-Control-Allow-Methods': 'GET, OPTIONS',
+			'Access-Control-Allow-Origin':'*',
+         },
+      });
+	  
+	  if (response.status == 401) {
+		  auth.logout();
+		  return;
+	  }
+      const result = await response.json();
+	  return result;
+   };
+
+   
 export async function uploadFiles(files, auth) {
   const formData = new FormData();
   for (const file of files) {
