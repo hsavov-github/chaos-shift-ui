@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useContext } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -10,15 +10,17 @@ import {useAuth} from "./services/UseAuth";
 import {handleSubmit} from './services/ReviewConnector';
 
 import ReviewBoard from './ReviewBoard';
+import {FeedbackFormContext} from './FeedbackAccordion';
 
-function FeedbackForm({request}) {
-  const [title, setTitle] = useState( request?request.title: '');
-  const [emails, setEmails] = useState('');
-  const [description, setDescription] = useState('');
+function FeedbackForm() {
+   const context = useContext(FeedbackFormContext);
+  //const [title, setTitle] = useState(request.title);
+  //const [emails, setEmails] = useState('');
+  //const [description, setDescription] = useState(request.description);
   const auth = useAuth();
   
   const handleClick = () => {
-	  handleSubmit({title:title, description:description}, auth);
+	  handleSubmit(context.request, auth);
   }
   
   
@@ -43,11 +45,11 @@ function FeedbackForm({request}) {
 
 	<Box sx={{ flexGrow: 1}} className="FeedbackForm">
 		<Stack direction="column">
-			<TextField size="small" label="Title" variant="standard" value={title} onChange={(e) => {setTitle(e.target.value)}} />	
-			<TextField size="small" label="Recipients" variant="standard" value={emails} onChange={(e) => {setEmails(e.target.value)}} />
+			<TextField size="small" label="Title" variant="standard" value={context.request.title} onChange={(e) => context.setRequest({...context.request, title: e.target.value})}/>	
+			<TextField size="small" label="Recipients" variant="standard" value={context.request.emails} onChange={(e) => context.setRequest({...context.request, emails: e.target.value})} />
 			
 			
-			<TextField size="small" label="Description" variant="standard" value={description} onChange={(e) => {setDescription(e.target.value)}} multiline rows={8}  />
+			<TextField size="small" label="Description" variant="standard" value={context.request.description} onChange={(e) => context.setRequest({...context.request, description: e.target.value})} multiline rows={8}  />
 			<Stack direction="row" spacing={4}>
 				<Button onClick={() => handleClick()}> Save </Button>
 				<Button> Send </Button>

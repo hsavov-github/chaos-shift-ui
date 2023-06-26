@@ -1,4 +1,4 @@
-import React, { useCallback, useState, KeyboardEvent } from 'react';
+import React, { useCallback, useState,useEffect, KeyboardEvent,createContext } from 'react';
 import { useSearchParams } from "react-router-dom";
 import { styled, useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
@@ -23,13 +23,24 @@ import ReviewBoard from './ReviewBoard';
 import FeedbackForm from './FeedbackForm';
 import PreviewTable from './PreviewTable';
 import {getDummyRequestByTitle, ReviewRequest} from './model/ReviewRequest';
+import {useAuth} from "./services/UseAuth";
+import {loadReview} from './services/ReviewConnector';
 
 
-
+export const FeedbackFormContext = createContext();
+ 
 function FeedbackAccordion() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const reviewBody = getDummyRequestByTitle(searchParams.get("reviewReqId"));
-  const [reviewRequest, setReviewRequest] = useState(reviewBody ? reviewBody : new ReviewRequest('','',''))
+  const reviewId = searchParams.get("reviewReqId");
+  const auth = useAuth();
+  const [reviewRequest, setReviewRequest] = useState(new ReviewRequest('','',''));
+  
+  useEffect(() => {
+	   if (reviewId) {
+		const result = loadReview(reviewId, auth);
+		result.then((value) => {setReviewRequest(value); console.log(value)});
+	   }
+	  },[]);
   
   const [files, setFiles] = useState([]);
   const [requestPanelState, setRequestPanelState] = useState(true);
@@ -55,6 +66,7 @@ function FeedbackAccordion() {
   ));	
 
   return (
+  <FeedbackFormContext.Provider value={{request:reviewRequest, setRequest:setReviewRequest}}>
   <Box sx={{
 			  bgcolor: '#dde6eb',
 			  boxShadow: 3,
@@ -69,7 +81,7 @@ function FeedbackAccordion() {
 			</AccordionSummary>
 			<AccordionDetails>
 				 <Stack direction="row" spacing={2}>
-							<FeedbackForm request = {reviewRequest} />
+					<FeedbackForm />
 				</Stack>
 			</AccordionDetails>
       </Accordion>
@@ -93,10 +105,11 @@ function FeedbackAccordion() {
 			  id="panel2bh-header"
 			/>
 			<AccordionDetails>
-				<PreviewTable/>
+					<PreviewTable/>				
 			</AccordionDetails>
       </Accordion> 
 	</Box>
+	</FeedbackFormContext.Provider>
   );
 }
 

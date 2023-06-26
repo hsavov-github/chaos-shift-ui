@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useContext, useEffect } from 'react';
 //import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
@@ -18,6 +18,7 @@ import UploadCard from './UploadCard';
 import PreviewCard from './PreviewCard';
 import {useAuth} from "./services/UseAuth";
 import {uploadFiles} from './services/ReviewConnector';
+import {FeedbackFormContext} from './FeedbackAccordion';	
 
 function createData(title, status) {
   return {
@@ -76,7 +77,7 @@ function Row(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.comments.map((commentRow) => (
+                  {row.comments && row.comments.map((commentRow) => (
                     <TableRow key={commentRow.content}>
                       <TableCell component="th" scope="row">
                         {commentRow.title}
@@ -123,8 +124,16 @@ const model = [
 
 
 export default function PreviewTable() {
-  const [rows, setRows] = useState(model);
+  //const [rows, setRows] = useState(model);
   const auth = useAuth();
+  const defaultData = useState(model);
+  const context = useContext(FeedbackFormContext);
+    useEffect(() => {
+	   if(!context.request.previews || context.request.previews.length ===0) {
+		context.setRequest({...context.request, previews:defaultData });
+	   }  
+	  },[]);
+  
   
   function addRows(files) {
 	uploadFiles(files, auth);
@@ -134,7 +143,7 @@ export default function PreviewTable() {
 		row.file.preview = URL.createObjectURL(file);
 		return row;
 	});
-	setRows(rowsToAdd.concat(rows));
+	context.setRequest(orig => ({...orig, previews:rowsToAdd.concat(orig.previews)}));
   };
   
   return (
@@ -157,7 +166,7 @@ export default function PreviewTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {context.request.previews && context.request.previews.map((row) => (
             <Row key={row.name} row={row} />
           ))}
         </TableBody>

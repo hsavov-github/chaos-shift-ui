@@ -55,8 +55,8 @@ function ManageRequests() {
 	  });
   }
   
-  const handleRowClick = (e, title) => {
-	  navigate('/chaos-shift-ui/request?reviewReqId=' + title);
+  const handleRowClick = (e, id) => {
+	  navigate('/chaos-shift-ui/request?reviewReqId=' + id);
   }
   
   const searchField = (params) => {
@@ -77,7 +77,7 @@ function ManageRequests() {
 				<TableRow
 				  key={row.title}
 				  sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { backgroundColor: '#dde6e4'}  }}
-				  onClick = {(e) => handleRowClick(e, row.title)}
+				  onClick = {(e) => handleRowClick(e, row.id)}
 				>
 				  <TableCell component="th" scope="row">
 					{row.title}
