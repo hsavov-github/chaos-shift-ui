@@ -17,7 +17,7 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import UploadCard from './UploadCard';
 import PreviewCard from './PreviewCard';
 import {useAuth} from "./services/UseAuth";
-import {uploadFiles} from './services/ReviewConnector';
+import {uploadFiles, uploadFile} from './services/ReviewConnector';
 import {FeedbackFormContext} from './FeedbackAccordion';	
 
 function createData(title, status) {
@@ -126,24 +126,36 @@ const model = [
 export default function PreviewTable() {
   //const [rows, setRows] = useState(model);
   const auth = useAuth();
-  const defaultData = useState(model);
+  //const defaultData = useState(model);
   const context = useContext(FeedbackFormContext);
-    useEffect(() => {
+  /*useEffect(() => {
 	   if(!context.request.previews || context.request.previews.length ===0) {
 		context.setRequest({...context.request, previews:defaultData });
 	   }  
 	  },[]);
-  
+	  */
   
   function addRows(files) {
-	uploadFiles(files, auth);
-	const rowsToAdd = files.map(file => {
+	for (const file of files) {
+		const result = uploadFile(file, auth);
+		result.then(uploaded => {
+			var row = createData('Set title', 'Active');
+			row.fileId = uploaded;
+			row.file = file;
+			row.file.preview = URL.createObjectURL(file);
+			context.setRequest(orig => ({...orig, previews:[row].concat( orig.previews ? orig.previews : [])}));
+		});
+	}
+   
+	
+	/*const rowsToAdd = files.map(file => {
 		var row = createData('Set title', 'Active');
 		row.file = file;
 		row.file.preview = URL.createObjectURL(file);
 		return row;
 	});
-	context.setRequest(orig => ({...orig, previews:rowsToAdd.concat(orig.previews)}));
+	context.setRequest(orig => ({...orig, previews:rowsToAdd.concat( orig.previews ? orig.previews : [])}));
+	*/
   };
   
   return (
@@ -166,9 +178,11 @@ export default function PreviewTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {context.request.previews && context.request.previews.map((row) => (
-            <Row key={row.name} row={row} />
-          ))}
+          {context.request.previews && context.request.previews.map((element) => 
+			  {     console.log(element);
+					return <Row key={element.title} row={element} />
+			  })
+		}
         </TableBody>
       </Table>
     </TableContainer>
