@@ -20,7 +20,7 @@ function FeedbackForm() {
   const auth = useAuth();
   
   const handleClick = () => {
-	  handleSubmit(context.request, auth);
+	  handleSubmit(context.request, auth, context.setRequest);
   }
   
   
