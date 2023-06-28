@@ -1,4 +1,4 @@
-import React, { useCallback, useState,useEffect, KeyboardEvent,createContext } from 'react';
+import React, { useCallback, useState, useEffect, KeyboardEvent,createContext } from 'react';
 import { useSearchParams } from "react-router-dom";
 import { styled, useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
@@ -33,14 +33,18 @@ function FeedbackAccordion() {
   const [searchParams, setSearchParams] = useSearchParams();
   const reviewId = searchParams.get("reviewReqId");
   const auth = useAuth();
-  const [reviewRequest, setReviewRequest] = useState(new ReviewRequest('','',''));
+  const [request, setRequest] = useState(new ReviewRequest('','',''));
+  
+  function update(req){
+	  setRequest(req);
+  }
   
   useEffect(() => {
 	   if (reviewId) {
-		const result = loadReview(reviewId, auth, setReviewRequest);
+		const result = loadReview(reviewId, auth, setRequest);
 		//result.then((value) => {setReviewRequest(value); console.log(value)});
 	   }
-	  },[]);
+	  },[request]);
   
   const [files, setFiles] = useState([]);
   const [requestPanelState, setRequestPanelState] = useState(true);
@@ -66,7 +70,7 @@ function FeedbackAccordion() {
   ));	
 
   return (
-  <FeedbackFormContext.Provider value={{request:reviewRequest, setRequest:setReviewRequest}}>
+  <FeedbackFormContext.Provider value={{request, setRequest}}>
   <Box sx={{
 			  bgcolor: '#dde6eb',
 			  boxShadow: 3,

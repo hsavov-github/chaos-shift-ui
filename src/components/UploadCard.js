@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect, useContext } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
@@ -7,12 +7,18 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import {FeedbackFormContext} from './FeedbackAccordion';
 
 
 export default function UploadCard({addFiles}) {
+	const context = useContext(FeedbackFormContext);
+	useEffect(() => {
+	   console.log(context.request);
+	  },[context.request]);
+
 	const onDrop = useCallback(acceptedFiles => {
-		addFiles(acceptedFiles);
-	}, []);
+		addFiles(acceptedFiles, context);
+	}, [context.request]);
 
 	const { getRootProps, getInputProps } = useDropzone({ onDrop });
   

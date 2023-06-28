@@ -12,13 +12,13 @@ import IconButton from '@mui/material/IconButton';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 
 
-export default function PreviewCard({ file }) {
+export default function PreviewCard( {preview} ) {
 	const navigate = useNavigate();
 	
 
 	const handleThumbnailClick = (e) => {
 		//history.push('/second-page', { inputValue }});
-		 navigate('/chaos-shift-ui/drawing',  { state: { data: file } });
+		 navigate('/chaos-shift-ui/drawing?previewId=' + preview.id,  { state: { data: preview.file } });
 	  };
   
   
@@ -27,7 +27,7 @@ export default function PreviewCard({ file }) {
 	<CardActionArea onClick = {handleThumbnailClick}>
 		  <CardMedia
 			sx={{ height: 100 }}
-			image={file.preview}
+			image={preview.file.preview}
 			title="upload file"
 		  />
 	  </CardActionArea>
