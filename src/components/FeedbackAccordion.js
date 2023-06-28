@@ -37,8 +37,8 @@ function FeedbackAccordion() {
   
   useEffect(() => {
 	   if (reviewId) {
-		const result = loadReview(reviewId, auth);
-		result.then((value) => {setReviewRequest(value); console.log(value)});
+		const result = loadReview(reviewId, auth, setReviewRequest);
+		//result.then((value) => {setReviewRequest(value); console.log(value)});
 	   }
 	  },[]);
   
