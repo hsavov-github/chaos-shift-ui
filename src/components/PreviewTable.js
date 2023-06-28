@@ -18,7 +18,8 @@ import UploadCard from './UploadCard';
 import PreviewCard from './PreviewCard';
 import {useAuth} from "./services/UseAuth";
 import {uploadFiles, uploadFile} from './services/ReviewConnector';
-import {FeedbackFormContext} from './FeedbackAccordion';	
+import {FeedbackFormContext} from './FeedbackAccordion';
+import {handleSubmit} from './services/ReviewConnector';	
 
 function createData(title, status) {
   return {
@@ -55,7 +56,7 @@ function Row(props) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-		{row.file ? <TableCell><PreviewCard file = {row.file}/></TableCell> : <TableCell/>}
+		{row.file ? <TableCell><PreviewCard preview = {row}/></TableCell> : <TableCell/>}
         <TableCell component="th" scope="row">
           {row.title}
         </TableCell>
@@ -128,6 +129,9 @@ export default function PreviewTable() {
   const auth = useAuth();
   //const defaultData = useState(model);
   const context = useContext(FeedbackFormContext);
+  useEffect(() => {
+	   console.log(context.request);
+	  },[context.request]);
   /*useEffect(() => {
 	   if(!context.request.previews || context.request.previews.length ===0) {
 		context.setRequest({...context.request, previews:defaultData });
@@ -135,8 +139,8 @@ export default function PreviewTable() {
 	  },[]);
 	  */
   
-  function addRows(files) {
-	for (const file of files) {
+  function addRows(files, cont) {
+	/*for (const file of files) {
 		const result = uploadFile(file, auth);
 		result.then(uploaded => {
 			var row = createData('Set title', 'Active');
@@ -145,7 +149,22 @@ export default function PreviewTable() {
 			row.file.preview = URL.createObjectURL(file);
 			context.setRequest(orig => ({...orig, previews:[row].concat( orig.previews ? orig.previews : [])}));
 		});
-	}
+	}*/
+   const filePromises = files.map(async(file) => {
+	    const result = await uploadFile(file, auth);
+		var row = createData('Set title', 'Active');
+		row.fileId = result;
+		row.file = file;
+		row.file.preview = URL.createObjectURL(file);
+		//context.setRequest(orig => ({...orig, previews:[row].concat( orig.previews ? orig.previews : [])}));
+		return row;
+   });
+   Promise.all(filePromises).then(rows => {
+	 console.log(cont.request);
+	 const toSubmit = {...cont.request, previews:rows.concat( cont.request.previews ? cont.request.previews : [])};
+	 //cont.setRequest(orig => ({...orig, previews:rows.concat( orig.previews ? orig.previews : [])}));
+	 handleSubmit(toSubmit, auth, cont.setRequest);
+   });
    
 	
 	/*const rowsToAdd = files.map(file => {

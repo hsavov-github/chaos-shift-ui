@@ -24,7 +24,7 @@ export const handleSubmit = (data, auth, setRequest) => {
 				  var file = findFile(data.previews, preview.fileId)
 				  return {...preview, file:file };
 				});
-				newState = {...newState,previews:updatedPreviews};
+				newState = {...newState, previews:updatedPreviews};
 			}
 			 setRequest(newState);
 			 console.log(post);
@@ -88,6 +88,33 @@ export const handleSubmit = (data, auth, setRequest) => {
 	  });
    };
    
+   export async function loadPreview(id, auth, setPreviewRequest, loadImageFromFile) {
+      //e.preventDefault();
+      const response = await fetch('http://localhost:8080/previews/' + encodeURIComponent(id), {
+         method: 'GET',
+         headers: {
+			'Authorization': 'Bearer ' + auth.token,
+			'Access-Control-Allow-Methods': 'GET, OPTIONS',
+			'Access-Control-Allow-Origin':'*',
+         },
+      });
+	  
+	  if (response.status == 401) {
+		  auth.logout();
+		  return;
+	  }
+      const result = await response.json();
+	  var preview = result;
+	  var previewPromise = loadImageForPreview(preview, auth);
+	  previewPromise.then((preview) => {
+		if(!preview.texts) {preview.texts = []};
+		if(!preview.paths) {preview.paths = []};
+		preview.points = [];
+	    setPreviewRequest(preview);
+		loadImageFromFile(preview.file.blob);
+	  });
+   };
+   
    export async function loadImageForPreview(preview, auth ) {
       //e.preventDefault();
       const response = await fetch('http://localhost:8080/files/' + encodeURIComponent(preview.fileId), {
@@ -105,7 +132,8 @@ export const handleSubmit = (data, auth, setRequest) => {
 	  }
       const blob = await response.blob();
 	  const result = URL.createObjectURL(blob);
-	  return {...preview, file:{preview:result}};;
+	  var file = {blob:blob, preview:result};
+	  return {...preview, file:file};
    };
 
    

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useContext } from 'react';
+import React, { useCallback, useState, useContext,useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -14,6 +14,9 @@ import {FeedbackFormContext} from './FeedbackAccordion';
 
 function FeedbackForm() {
    const context = useContext(FeedbackFormContext);
+   useEffect(() => {
+	   console.log(context.request);
+	  },[context.request]);
   //const [title, setTitle] = useState(request.title);
   //const [emails, setEmails] = useState('');
   //const [description, setDescription] = useState(request.description);
@@ -21,6 +24,15 @@ function FeedbackForm() {
   
   const handleClick = () => {
 	  handleSubmit(context.request, auth, context.setRequest);
+  }
+  function changeTitle(e) {
+	  context.setRequest({...context.request, title: e.target.value});
+  }
+  function changeEmails(e) {
+	  context.setRequest({...context.request, emails: e.target.value});
+  }
+  function changeDescription(e) {
+	  context.setRequest({...context.request, description: e.target.value});
   }
   
   
@@ -45,11 +57,11 @@ function FeedbackForm() {
 
 	<Box sx={{ flexGrow: 1}} className="FeedbackForm">
 		<Stack direction="column">
-			<TextField size="small" label="Title" variant="standard" value={context.request.title} onChange={(e) => context.setRequest({...context.request, title: e.target.value})}/>	
-			<TextField size="small" label="Recipients" variant="standard" value={context.request.emails} onChange={(e) => context.setRequest({...context.request, emails: e.target.value})} />
+			<TextField size="small" label="Title" variant="standard" value={context.request.title} onChange={changeTitle}/>	
+			<TextField size="small" label="Recipients" variant="standard" value={context.request.emails} onChange={changeEmails} />
 			
 			
-			<TextField size="small" label="Description" variant="standard" value={context.request.description} onChange={(e) => context.setRequest({...context.request, description: e.target.value})} multiline rows={8}  />
+			<TextField size="small" label="Description" variant="standard" value={context.request.description} onChange={changeDescription} multiline rows={8}  />
 			<Stack direction="row" spacing={4}>
 				<Button onClick={() => handleClick()}> Save </Button>
 				<Button> Send </Button>

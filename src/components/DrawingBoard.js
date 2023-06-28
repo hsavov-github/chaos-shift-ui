@@ -9,7 +9,9 @@ import Operations from'./OperationsState';
 import MenuBar from'./MenuBar';
 import ImageUploader from'./ImageUploader';
 import { saveSVG, savePNG } from './FileExport';
-import {useLocation} from 'react-router-dom';
+import {useLocation, useSearchParams} from 'react-router-dom';
+import {loadPreview} from './services/ReviewConnector';
+import {useAuth} from "./services/UseAuth";
 
 const Cursors = new Map([
   [Operations.Draw, 'crosshair'],
@@ -21,9 +23,12 @@ const Cursors = new Map([
 
 function DrawingBoard({ brushWidth }) {
   const svgRef = useRef(null); // reference to the svg element
-  const location = useLocation()
+  const location = useLocation();
   const passedImage = location.state && location.state.data ? location.state.data : null;
-  const [image, setImage] = useState(loadImageFromFile(passedImage));
+  const [searchParams, setSearchParams] = useSearchParams();
+  const auth = useAuth();
+  const previewId = searchParams.get("previewId");
+  const [image, setImage] = useState(null/*loadImageFromFile(passedImage)*/);
   const [imgSize, setImgSize] = useState({ width: 0, height: 0 });
   const [enrichment, setEnrichment] = useState({
 		  paths: [],
@@ -42,6 +47,11 @@ function DrawingBoard({ brushWidth }) {
     ...enrichment,
     texts: newTexts
   });
+  useEffect(() => {
+	   if (previewId) {
+		loadPreview(previewId, auth, setEnrichment,loadImageFromFile);
+	   }
+	  },[]);
   
   //const [paths, setPaths] = useState([]); // array of paths to draw on the svg
   //const [points, setPoints] = useState([]); // array of points to draw the current path
