@@ -64,7 +64,7 @@ export const handleSubmit = (data, auth, setRequest) => {
 	  return result;
    };
    
-    export async function loadReview(id, auth) {
+    export async function loadReview(id, auth, setReviewRequest) {
       //e.preventDefault();
       const response = await fetch('http://localhost:8080/reviews/' + encodeURIComponent(id), {
          method: 'GET',
@@ -80,7 +80,32 @@ export const handleSubmit = (data, auth, setRequest) => {
 		  return;
 	  }
       const result = await response.json();
-	  return result;
+	  var review = result;
+	  var previewPromises = review.previews.map(preview  => loadImageForPreview(preview, auth));
+	  Promise.all(previewPromises).then((values) => {
+		review ={...review, previews:values};
+	    setReviewRequest(review);
+	  });
+   };
+   
+   export async function loadImageForPreview(preview, auth ) {
+      //e.preventDefault();
+      const response = await fetch('http://localhost:8080/files/' + encodeURIComponent(preview.fileId), {
+         method: 'GET',
+         headers: {
+			'Authorization': 'Bearer ' + auth.token,
+			'Access-Control-Allow-Methods': 'GET, OPTIONS',
+			'Access-Control-Allow-Origin':'*',
+         },
+      });
+	  
+	  if (response.status == 401) {
+		  auth.logout();
+		  return;
+	  }
+      const blob = await response.blob();
+	  const result = URL.createObjectURL(blob);
+	  return {...preview, file:{preview:result}};;
    };
 
    
