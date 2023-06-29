@@ -1,6 +1,8 @@
 import { createContext, useState, useEffect, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
+import jwt_decode from "jwt-decode";
+
 
 const AuthContext = createContext();
 
@@ -27,6 +29,12 @@ function useCookie() {
   const login = () => {
 	const value = Cookies.get("API_TOKEN");
 	setToken(value);
+  }
+  
+  const isGuest = () => {
+	const value = Cookies.get("API_TOKEN");
+	const claims = jwt_decode(value);
+	return "Guest" === claims.role;
   }
   
   const logout = () => {

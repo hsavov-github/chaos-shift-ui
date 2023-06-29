@@ -44,7 +44,7 @@ function FeedbackAccordion() {
 		const result = loadReview(reviewId, auth, setRequest);
 		//result.then((value) => {setReviewRequest(value); console.log(value)});
 	   }
-	  },[request]);
+	  },[]);
   
   const [files, setFiles] = useState([]);
   const [requestPanelState, setRequestPanelState] = useState(true);

@@ -129,9 +129,6 @@ export default function PreviewTable() {
   const auth = useAuth();
   //const defaultData = useState(model);
   const context = useContext(FeedbackFormContext);
-  useEffect(() => {
-	   console.log(context.request);
-	  },[context.request]);
   /*useEffect(() => {
 	   if(!context.request.previews || context.request.previews.length ===0) {
 		context.setRequest({...context.request, previews:defaultData });

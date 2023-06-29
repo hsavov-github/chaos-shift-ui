@@ -4,6 +4,7 @@ export const handleSubmit = (data, auth, setRequest) => {
 	  if(toSend.previews) {
 		  for( var preview of toSend.previews) {
 			  delete preview.file;
+			  delete preview.points;
 		  }
 	  }
       fetch('http://localhost:8080/reviews', {
@@ -39,11 +40,69 @@ export const handleSubmit = (data, auth, setRequest) => {
          });
    };
    
+   export const savePreview = (data, auth, setPreviewRequest, loadImageFromFile) => {
+      //e.preventDefault();
+	  var toSend = JSON.parse(JSON.stringify(data));
+	  delete toSend.file;
+	  delete toSend.points;
+	  toSend.paths = JSON.stringify(data.paths);
+	  toSend.texts = JSON.stringify(data.texts);
+      fetch('http://localhost:8080/previews', {
+         method: 'POST',
+         body: JSON.stringify(toSend),
+         headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+			'Authorization': 'Bearer ' + auth.token,
+			'Access-Control-Allow-Methods': 'POST, OPTIONS',
+			'Access-Control-Allow-Origin':'*',
+         },
+      })
+         .then((res) => res.json())
+         .then((post) => {
+			var preview = post;
+			preview.texts = (preview.texts ? JSON.parse(preview.texts): []);
+		    preview.paths = (preview.paths ? JSON.parse(preview.paths): []);
+			preview.points = [];
+			preview.file = data.file;
+			setPreviewRequest(preview);
+			loadImageFromFile(preview.file.blob);
+			console.log(preview);
+			 /*
+            setPosts((posts) => [post, ...posts]);
+            setTitle('');
+            setBody('');
+			*/
+         })
+         .catch((err) => {
+            console.log(err.message);
+         });
+   };
+   
    function findFile(localFiles, fileId) {
 	   const file = localFiles.find( element => element.fileId === fileId).file;
 	   return file;
    }
    
+   export const sendForReview = (data, auth) => {
+      //e.preventDefault();
+      fetch('http://localhost:8080/reviews/email', {
+         method: 'POST',
+         body: JSON.stringify({"reviewId":data.id,"recipients":[data.emails]}),
+         headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+			'Authorization': 'Bearer ' + auth.token,
+			'Access-Control-Allow-Methods': 'POST, OPTIONS',
+			'Access-Control-Allow-Origin':'*',
+         },
+      })
+         .then((res) => res.json())
+         .then((post) => {
+			console.log(post);
+         })
+         .catch((err) => {
+            console.log(err.message);
+         });
+   };
    
   export async function loadReviews(data, auth) {
       //e.preventDefault();
@@ -107,8 +166,8 @@ export const handleSubmit = (data, auth, setRequest) => {
 	  var preview = result;
 	  var previewPromise = loadImageForPreview(preview, auth);
 	  previewPromise.then((preview) => {
-		if(!preview.texts) {preview.texts = []};
-		if(!preview.paths) {preview.paths = []};
+		preview.texts = (preview.texts ? JSON.parse(preview.texts): []);
+		preview.paths = (preview.paths ? JSON.parse(preview.paths): []);
 		preview.points = [];
 	    setPreviewRequest(preview);
 		loadImageFromFile(preview.file.blob);
