@@ -10,7 +10,7 @@ import MenuBar from'./MenuBar';
 import ImageUploader from'./ImageUploader';
 import { saveSVG, savePNG } from './FileExport';
 import {useLocation, useSearchParams} from 'react-router-dom';
-import {loadPreview} from './services/ReviewConnector';
+import {loadPreview, savePreview} from './services/ReviewConnector';
 import {useAuth} from "./services/UseAuth";
 
 const Cursors = new Map([
@@ -49,7 +49,7 @@ function DrawingBoard({ brushWidth }) {
   });
   useEffect(() => {
 	   if (previewId) {
-		loadPreview(previewId, auth, setEnrichment,loadImageFromFile);
+		loadPreview(previewId, auth, setEnrichment, loadImageFromFile);
 	   }
 	  },[]);
   
@@ -181,7 +181,7 @@ function DrawingBoard({ brushWidth }) {
     }
   };
 
-  // handle mouse up event
+  // handle mouse up event 
   const handleMouseUp = (e) => {
 	  console.log("handleMouseUp");
 	if(controlType !== Operations.Draw || !drawing) {
@@ -194,10 +194,12 @@ function DrawingBoard({ brushWidth }) {
     if (enrichment.points.length > 1) {
       // if there are more than one point in the current path, add it to the paths array
 	  let path = {points: enrichment.points, id:calculateElementId(enrichment.paths)};
-	  setEnrichment((orig) => updatePaths(enrichment, [...enrichment.paths, path]));
+	  let previewToSave = updatePaths(enrichment, [...enrichment.paths, path]);
+	  savePreview(previewToSave, auth, setEnrichment, loadImageFromFile);
+	  //setEnrichment((orig) => updatePaths(enrichment, [...enrichment.paths, path]));
     }
 	// reset the points array for the next path
-    setEnrichment((orig) => updatePoints(orig, [])); 
+    setEnrichment((orig) => updatePoints(orig, []));
   };
   
   const handleClick = (e) => {
@@ -209,12 +211,17 @@ function DrawingBoard({ brushWidth }) {
 	if (target.tagName === "path") {
 		console.log("Deleting path" );
 		const updated = enrichment.paths.filter( path => filterElements(path, target));
-		setEnrichment((orig) => updatePaths(orig, updated));
+		let previewToSave = updatePaths(enrichment, updated);
+		savePreview(previewToSave, auth, setEnrichment, loadImageFromFile);
+		//setEnrichment((orig) => updatePaths(orig, updated));
 	} else if (target.tagName === "text") {
 		console.log("Deleting text" );
 		const updated = enrichment.texts.filter( text => filterElements(text, target));
-		setEnrichment((orig) => updateTexts(orig, updated));
+		let previewToSave = updatePaths(enrichment, updated);
+		savePreview(previewToSave, auth, setEnrichment, loadImageFromFile);
+		//setEnrichment((orig) => updateTexts(orig, updated));
 	}
+	
   };
   
   const filterElements = (element, target) => {
@@ -272,8 +279,10 @@ function DrawingBoard({ brushWidth }) {
 	  
 	  const x = editPosition.x;
       const y = editPosition.y + 25;
-	  setEnrichment(orig => updateTexts(orig, [...orig.texts, {value, x, y, id }]));
-	  setText('');
+	  let previewToSave = updateTexts(enrichment, [...enrichment.texts, {value, x, y, id }]);
+	  savePreview(previewToSave, auth, setEnrichment, loadImageFromFile);
+	  //setEnrichment(orig => updateTexts(orig, [...orig.texts, {value, x, y, id }]));
+	  setText(''); 
     }
    };
 
@@ -316,7 +325,9 @@ function DrawingBoard({ brushWidth }) {
 	  const updatedTexts = enrichment.texts.map((text) =>
           text.id == draggedTextIndex ? { ...text, x:x, y:y } : text
         );
-	  setEnrichment(orig => updateTexts(orig, updatedTexts));
+	  //(orig => updateTexts(orig, updatedTexts));
+	  let previewToSave = updateTexts(enrichment, updatedTexts);
+	  savePreview(previewToSave, auth, setEnrichment, loadImageFromFile);
     }
   };
   

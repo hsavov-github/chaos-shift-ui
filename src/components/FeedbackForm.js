@@ -7,7 +7,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Divider from '@mui/material/Divider';
 import InlineEdit from '@atlaskit/inline-edit';
 import {useAuth} from "./services/UseAuth";
-import {handleSubmit} from './services/ReviewConnector';
+import {handleSubmit, sendForReview} from './services/ReviewConnector';
 
 import ReviewBoard from './ReviewBoard';
 import {FeedbackFormContext} from './FeedbackAccordion';
@@ -22,8 +22,11 @@ function FeedbackForm() {
   //const [description, setDescription] = useState(request.description);
   const auth = useAuth();
   
-  const handleClick = () => {
+  const handleSave = () => {
 	  handleSubmit(context.request, auth, context.setRequest);
+  }
+  const handleSend = () => {
+	  sendForReview(context.request, auth);
   }
   function changeTitle(e) {
 	  context.setRequest({...context.request, title: e.target.value});
@@ -63,8 +66,8 @@ function FeedbackForm() {
 			
 			<TextField size="small" label="Description" variant="standard" value={context.request.description} onChange={changeDescription} multiline rows={8}  />
 			<Stack direction="row" spacing={4}>
-				<Button onClick={() => handleClick()}> Save </Button>
-				<Button> Send </Button>
+				<Button onClick={() => handleSave()}> Save </Button>
+				<Button onClick={() => handleSend()}> Send </Button>
 			</Stack>
 		</Stack>
 	</Box >

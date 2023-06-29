@@ -99,7 +99,7 @@ function AppMenu() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={(e) => handleRedirect(e, page)}>
+                <MenuItem  disabled={!useAuth.isGuest} key={page} onClick={(e) => handleRedirect(e, page)}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
@@ -127,6 +127,7 @@ function AppMenu() {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
+			    disabled={useAuth.isGuest}
                 key={page}
                 onClick={(e) => handleRedirect(e, page)}
                 sx={{ my: 2, color: 'white', display: 'block' }}

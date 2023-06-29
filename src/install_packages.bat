@@ -10,3 +10,4 @@ npm install color
 npm install react-multi-carousel --save
 npm i @atlaskit/inline-edit
 npm i js-cookie
+npm install jwt-decode
