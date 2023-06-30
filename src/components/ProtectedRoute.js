@@ -10,4 +10,13 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+export const InternalView = ({ children }) => {
+  const auth = useAuth();
+  if (!auth || auth.isGuest ) {
+    // user is not authenticated
+    return <Navigate to="/chaos-shift-ui/login" />;
+  }
+  return children;
+};
+
 export default ProtectedRoute;
