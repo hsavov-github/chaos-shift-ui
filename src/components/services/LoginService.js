@@ -36,3 +36,31 @@ export const login = (username, password, redirect) => {
 	console.log("stored cookie" + Cookies.get("API_TOKEN"));
 	
    };
+   
+   export const authGuest = (token, auth, navigate) => {
+     const formData  = new FormData();
+	  formData.append('sessionToken', token);
+      fetch('http://localhost:8080/auth/session', {
+         method: 'POST',
+         body: formData
+      })
+         .then((res) => res.json())
+         .then((post) => {
+			 console.log(post);
+			 const secure = window.location.protocol === 'https';
+			 Cookies.set("API_TOKEN", post.token, undefined, "/", undefined, secure);
+			 Cookies.set("REVIEW_ID", post.reviewId, undefined, "/", undefined, secure);
+			 console.log("stored cookie" + Cookies.get("API_TOKEN"));
+			 auth.login();
+			 navigate("/chaos-shift-ui/request?reviewReqId=" + post.reviewId, { replace: true });
+			 //cookies.removeItem('API_TOKEN');
+			 /*
+            setPosts((posts) => [post, ...posts]);
+            setTitle('');
+            setBody('');
+			*/
+         })
+         .catch((err) => {
+            console.log(err.message);
+         });
+   };

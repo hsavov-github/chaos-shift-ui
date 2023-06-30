@@ -17,7 +17,13 @@ export const handleSubmit = (data, auth, setRequest) => {
 			'Access-Control-Allow-Origin':'*',
          },
       })
-         .then((res) => res.json())
+         .then((res) => {
+			 if (res.status == 401) {
+				auth.logout();
+				throw new Error('Unauthenticated!');;
+			}
+			return res.json()
+		 })
          .then((post) => {
 			var newState = post;
 			if(newState.previews) {
