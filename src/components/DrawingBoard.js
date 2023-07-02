@@ -243,7 +243,7 @@ function DrawingBoard({ brushWidth }) {
 	if (target.tagName === "path") {
 	    e.target.style.stroke = 'red';  
 	} else if (target.tagName === "text") {
-		e.target.style.fill = 'black';
+		e.target.style.fill = '#f76820';
 	}
   };
 
@@ -405,7 +405,7 @@ function DrawingBoard({ brushWidth }) {
 			)}
 			{enrichment.texts.map((text, i) => (
 			<Draggable onStop={handleDrop} id={text.id} bounds="#boundary" >
-				<text key={i} x={text.x} y={text.y} id={text.id} style={{fill: "black", userSelect: 'none'}}>{text.value}</text>
+				<text key={i} x={text.x} y={text.y} id={text.id} style={{fill: "#f76820", fontSize:"28px", userSelect: 'none'}}>{text.value}</text>
 			</Draggable>
           ))}
 		  

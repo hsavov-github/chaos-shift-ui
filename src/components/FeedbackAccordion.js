@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect, KeyboardEvent,createContext } from 'react';
 import { useSearchParams } from "react-router-dom";
 import { styled, useTheme } from '@mui/material/styles';
+import { useNavigate } from "react-router-dom";
 import Stack from '@mui/material/Stack';
 import Fab from '@mui/material/Fab';
 import TextField from '@mui/material/TextField';
@@ -31,7 +32,8 @@ export const FeedbackFormContext = createContext();
  
 function FeedbackAccordion() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const reviewId = searchParams.get("reviewReqId");
+  let reviewId = searchParams.get("reviewReqId");
+  const navigate = useNavigate();
   const auth = useAuth();
   const [request, setRequest] = useState(new ReviewRequest('','',''));
   
@@ -40,6 +42,10 @@ function FeedbackAccordion() {
   }
   
   useEffect(() => {
+	   if (auth.isGuest()) {
+		  reviewId = auth.guestReviewId(); 
+		  navigate("/chaos-shift-ui/request?reviewReqId=" + reviewId, { replace: true });
+	   }
 	   if (reviewId) {
 		const result = loadReview(reviewId, auth, setRequest);
 		//result.then((value) => {setReviewRequest(value); console.log(value)});

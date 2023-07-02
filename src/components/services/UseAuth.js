@@ -37,6 +37,12 @@ function useCookie() {
 	return "Guest" === claims.role;
   }
   
+  const guestReviewId = () => {
+	const value = Cookies.get("API_TOKEN");
+	const claims = jwt_decode(value);
+	return claims.reviewId;
+  }
+  
   const logout = () => {
     try {
       Cookies.remove("API_TOKEN");
@@ -46,7 +52,7 @@ function useCookie() {
 	}
   };
 
-  return {token, logout, login};
+  return {token, logout, login, isGuest, guestReviewId};
 };
 
 
