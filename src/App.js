@@ -6,6 +6,7 @@ import DrawingBoard from './components/DrawingBoard';
 import FeedbackAccordion from './components/FeedbackAccordion';
 import GuestEntry from './components/GuestEntry';
 import ManageRequests from './components/ManageRequests';
+import ManageProjects from './components/projects/ManageProjects';
 import ProtectedRoute, {InternalView} from './components/ProtectedRoute';
 import AppMenu from './components/AppMenu';
 import {AuthProvider} from './components/services/UseAuth'
@@ -25,7 +26,8 @@ function App() {
 				<Route exact path="/chaos-shift-ui/login" element = {<LoginForm />} />
 				<Route path="/chaos-shift-ui/guest" element = {<GuestEntry />} />				
 				GuestEntry
-				<Route exact path="/chaos-shift-ui/" element = {<InternalView> <ManageRequests /> </InternalView>} />  
+				<Route exact path="/chaos-shift-ui/" element = {<InternalView> <ManageProjects/> </InternalView>} />  
+				<Route exact path="/chaos-shift-ui/requests" element = {<InternalView> <ManageRequests /> </InternalView>} />  
 				<Route exact path="/chaos-shift-ui/request" element = {<ProtectedRoute> <FeedbackAccordion /> </ProtectedRoute>} />  
 				<Route path="/chaos-shift-ui/drawing" element = {<ProtectedRoute> <DrawingBoard brushWidth="8" /> </ProtectedRoute>} />
 		   </Routes>

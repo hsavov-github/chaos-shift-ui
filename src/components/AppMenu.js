@@ -15,7 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';	
 import {useAuth} from './services/UseAuth';
 
-const pages = ['Home', 'Request review', 'Drawing board'];
+const pages = ['Projects', 'Requests','Request review', 'Drawing board'];
 
 function AppMenu() {
   const navigate = useNavigate();
@@ -36,7 +36,8 @@ function AppMenu() {
   };
   
   const handleRedirect = (e, page) => {
-	  if(page === 'Home') { navigate('/chaos-shift-ui/');}
+	  if(page === 'Projects') { navigate('/chaos-shift-ui/');}
+	  if(page === 'Requests') { navigate('/chaos-shift-ui/requests');}
 	  if(page === 'Request review') { navigate('/chaos-shift-ui/request');}
 	  if(page === 'Drawing board') { navigate('/chaos-shift-ui/drawing');}
 		  

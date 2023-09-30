@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import {SERVER_URI} from './const';
 
 export const login = (username, password, redirect) => {
 	
@@ -6,7 +7,7 @@ export const login = (username, password, redirect) => {
 	  formData.append('username', username);
 	  formData.append('password', password);
       //e.preventDefault();
-      fetch('http://localhost:8080/auth/login', {
+      fetch('http://' + SERVER_URI + ':8080/auth/login', {
          method: 'POST',
          body: formData
       })
@@ -40,7 +41,7 @@ export const login = (username, password, redirect) => {
    export const authGuest = (token, auth, navigate) => {
      const formData  = new FormData();
 	  formData.append('sessionToken', token);
-      fetch('http://localhost:8080/auth/session', {
+      fetch('http://' + SERVER_URI + ':8080/auth/session', {
          method: 'POST',
          body: formData
       })

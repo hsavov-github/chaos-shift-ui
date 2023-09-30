@@ -1,3 +1,5 @@
+import {SERVER_URI} from './const';
+
 export const handleSubmit = (data, auth, setRequest) => {
       //e.preventDefault();
 	  var toSend = JSON.parse(JSON.stringify(data));
@@ -7,7 +9,7 @@ export const handleSubmit = (data, auth, setRequest) => {
 			  delete preview.points;
 		  }
 	  }
-      fetch('http://localhost:8080/reviews', {
+      fetch('http://' + SERVER_URI + ':8080/reviews', {
          method: 'POST',
          body: JSON.stringify(toSend),
          headers: {
@@ -53,7 +55,7 @@ export const handleSubmit = (data, auth, setRequest) => {
 	  delete toSend.points;
 	  toSend.paths = JSON.stringify(data.paths);
 	  toSend.texts = JSON.stringify(data.texts);
-      fetch('http://localhost:8080/previews', {
+      fetch('http://' + SERVER_URI + ':8080/previews', {
          method: 'POST',
          body: JSON.stringify(toSend),
          headers: {
@@ -91,7 +93,7 @@ export const handleSubmit = (data, auth, setRequest) => {
    
    export const sendForReview = (data, auth) => {
       //e.preventDefault();
-      fetch('http://localhost:8080/reviews/email', {
+      fetch('http://' + SERVER_URI + ':8080/reviews/email', {
          method: 'POST',
          body: JSON.stringify({"reviewId":data.id,"recipients":[data.emails]}),
          headers: {
@@ -112,7 +114,7 @@ export const handleSubmit = (data, auth, setRequest) => {
    
   export async function loadReviews(data, auth) {
       //e.preventDefault();
-      const response = await fetch('http://localhost:8080/reviews', {
+      const response = await fetch('http://' + SERVER_URI + ':8080/reviews', {
          method: 'GET',
          headers: {
 			'Authorization': 'Bearer ' + auth.token,
@@ -131,7 +133,7 @@ export const handleSubmit = (data, auth, setRequest) => {
    
     export async function loadReview(id, auth, setReviewRequest) {
       //e.preventDefault();
-      const response = await fetch('http://localhost:8080/reviews/' + encodeURIComponent(id), {
+      const response = await fetch('http://' + SERVER_URI + ':8080/reviews/' + encodeURIComponent(id), {
          method: 'GET',
          headers: {
 			'Authorization': 'Bearer ' + auth.token,
@@ -155,7 +157,7 @@ export const handleSubmit = (data, auth, setRequest) => {
    
    export async function loadPreview(id, auth, setPreviewRequest, loadImageFromFile) {
       //e.preventDefault();
-      const response = await fetch('http://localhost:8080/previews/' + encodeURIComponent(id), {
+      const response = await fetch('http://' + SERVER_URI + ':8080/previews/' + encodeURIComponent(id), {
          method: 'GET',
          headers: {
 			'Authorization': 'Bearer ' + auth.token,
@@ -182,7 +184,7 @@ export const handleSubmit = (data, auth, setRequest) => {
    
    export async function loadImageForPreview(preview, auth ) {
       //e.preventDefault();
-      const response = await fetch('http://localhost:8080/files/' + encodeURIComponent(preview.fileId), {
+      const response = await fetch('http://' + SERVER_URI + ':8080/files/' + encodeURIComponent(preview.fileId), {
          method: 'GET',
          headers: {
 			'Authorization': 'Bearer ' + auth.token,
@@ -207,7 +209,7 @@ export async function uploadFiles(files, auth) {
   for (const file of files) {
     formData.append('files', file);
   }
-  const response = await fetch('http://localhost:8080/files', {
+  const response = await fetch('http://' + SERVER_URI + ':8080/files', {
     method: 'POST',
     body: formData,
 	headers: {
@@ -226,9 +228,14 @@ export async function uploadFiles(files, auth) {
 
 export async function uploadFile(file, auth) {
   const formData = new FormData();
+  formData.append('json', new Blob([JSON.stringify({
+    name: "Book"
+	})], {
+    type: "application/json"
+	}));
   formData.append('file', file);
 
-  const response = await fetch('http://localhost:8080/file', {
+  const response = await fetch('http://' + SERVER_URI + ':8080/filejs', {
     method: 'POST',
     body: formData,
 	headers: {
