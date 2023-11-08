@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback, useState, useEffect, KeyboardEvent,createContext } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -6,7 +6,9 @@ import Modal from '@mui/material/Modal';
 import ProjectForm from './ProjectForm';
 import ProjectSegments from './ProjectSegments';
 import Stack from '@mui/material/Stack';
+import {ProjectRequest} from './model/ProjectRequest';
 
+export const ProjectContext = createContext();
 
 const style = {
   position: 'absolute',
@@ -24,23 +26,26 @@ const style = {
 
 export default function ProjectModal() {
   const [open, setOpen] = React.useState(false);
+  const [project, setProject] = useState(new ProjectRequest('','',''));
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   return (
-    <div>
-      <Button onClick={handleOpen}>Add Project</Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <ProjectForm />
-		  <ProjectSegments />
-        </Box>
-      </Modal>
-    </div>
+  <ProjectContext.Provider value={{project, setProject}}>
+		<div>
+		  <Button onClick={handleOpen}>Add Project</Button>
+		  <Modal
+			open={open}
+			onClose={handleClose}
+			aria-labelledby="modal-modal-title"
+			aria-describedby="modal-modal-description"
+		  >
+			<Box sx={style}>
+			  <ProjectForm />
+			  {project.assignment && <ProjectSegments />}
+			</Box>
+		  </Modal>
+		</div>
+	</ProjectContext.Provider>
   );
 }

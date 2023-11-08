@@ -25,7 +25,9 @@ import UploadCard from '../UploadCard';
 import PreviewCard from '../PreviewCard';
 import {useNavigate } from "react-router-dom";
 import {useAuth} from "../services/UseAuth";
-import {loadImage, handleSubmit} from './services/FileConnector';
+import {loadImage, handleSubmit, generateSuggestion} from './services/FileConnector';
+import {ProjectContext} from './ProjectModal';
+
 
 const dummySegments = [
 			  {
@@ -144,6 +146,10 @@ export default function ProjectSegments() {
   const [rows, setRows] = useState();
   const auth = useAuth();
   const navigate = useNavigate();
+  const context = useContext(ProjectContext);
+  useEffect(() => {
+	   console.log(context.project);
+	  },[context.project]);
   //const defaultData = useState(model);
   //const context = useContext(FeedbackFormContext);
   
@@ -155,12 +161,39 @@ export default function ProjectSegments() {
 	  createData('Electricity', auth),
 	  createData('Interior', auth)
 	 ];*/
+	 /*
 	 const segmentPromises = dummySegments.map(segment => {
 		 return createData(segment, auth);
 	 });
 	 Promise.all(segmentPromises).then((values) => {
 		setRows(values);
-	 });
+	 });*/
+	 
+	 const segmentPromises = context.project.assignment.map(assignmentItem => {
+		 return generateSuggestion(assignmentItem.description, auth)
+		 .then( response => {
+			 console.log(response);
+			 return {
+				type: assignmentItem.title,
+				prompt: assignmentItem.description,
+				fileId: response.data[0].url
+			  };
+		 }).then( segment => {
+			return {
+				title: segment.type,
+				data: 
+				  {
+					prompt:segment.prompt,
+					fileId:segment.fileId,
+					image: segment.fileId
+				  }
+			  };
+			});
+		 });
+		Promise.all(segmentPromises).then((values) => {
+			const resolved = values.flat();
+			setRows(resolved);
+		});
 	 
  }
  

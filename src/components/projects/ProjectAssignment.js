@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback, useState, useContext,useEffect } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -8,6 +8,7 @@ import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import TextField from '@mui/material/TextField';
+import {ProjectContext} from './ProjectModal';
 
 /*
 Project Name: Shanghai Single-family house 
@@ -21,33 +22,37 @@ Functions: 1floor: entrance, bathroom, kitchen (north); living room, dining room
 
 const dummyProps = [
 			  {
-				label:'Project Name:',
+				title:'Project Name:',
 				description: 'Shanghai Single-family house',
 				id:'1'
 			  },
 			  {
-				label:'Description:',
+				title:'Description:',
 				description: 'Single-family house in Shanghai, 2 floors',
 				id:'2'				
 			  },
 			  {
-				label:'Floor Area:',
+				title:'Floor Area:',
 				description: '200m2 ',
 				id:'3'			
 			  },
 			  {
-				label:'Total GFA:',
+				title:'Total GFA:',
 				description: '400m2',
 				id:'4',	
 			  },
 			  {
-				label:'Project Name:',
+				title:'Project Name:',
 				description: 'Shanghai Single-family house ',
 				id:'5'		
 			  },
 			]
 
-export default function ProjectAssignment() {	
+export default function ProjectAssignment() {
+const context = useContext(ProjectContext);
+   useEffect(() => {
+	   console.log(context.project);
+	  },[context.project]);	
 	
   const [checked, setChecked] = React.useState([0]);
 
@@ -65,7 +70,7 @@ export default function ProjectAssignment() {
 
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-      {dummyProps.map((prop) => {
+      {context.project.assignment.map((prop) => {
         const labelId = `checkbox-list-label-${prop.id}`;
 
         return (
@@ -87,7 +92,7 @@ export default function ProjectAssignment() {
 				  fullWidth 
 				  disabled
 				  id="labelId"
-				  label={prop.label}
+				  label={prop.title}
 				  variant="standard"
 				  defaultValue={prop.description}
 				/>
