@@ -11,6 +11,7 @@ import {handleSubmit, sendForReview} from '../services/ReviewConnector';
 import {ProjectContext} from './ProjectModal';
 import UploadAssignment from './UploadAssignment';
 import ProjectAssignment from './ProjectAssignment';
+import AssignmentCategoryPicker from './AssignmentCategoryPicker';
 
 function FeedbackForm() {
   const context = useContext(ProjectContext);
@@ -40,7 +41,8 @@ function FeedbackForm() {
 
 	<Box sx={{ flexGrow: 1}} className="FeedbackForm">
 		<Stack direction="column">
-			<TextField size="small" label="Title" variant="standard" value={context.project.title} onChange={changeTitle}/>				
+			<TextField size="small" label="Title" variant="standard" value={context.project.title} onChange={changeTitle}/>
+			<AssignmentCategoryPicker />
 			<UploadAssignment />
 				{context.project.assignment && <ProjectAssignment /> }
 			<Stack direction="row" spacing={4}>

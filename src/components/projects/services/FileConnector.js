@@ -43,7 +43,7 @@ export const handleSubmit = (data, auth, setRequest) => {
          .then((res) => {
 			 if (res.status == 401) {
 				auth.logout();
-				throw new Error('Unauthenticated!');;
+				return;
 			}
 			return res.json()
 		 })
@@ -53,8 +53,14 @@ export const handleSubmit = (data, auth, setRequest) => {
 		 return response
    };
    
-export async function uploadAssignment(file, auth) {
+export async function uploadAssignment(file, categories, auth) {
+  var toSend = JSON.parse(JSON.stringify(categories));
   const formData = new FormData();
+  formData.append('categories', new Blob([JSON.stringify(
+      toSend
+  	)], {
+      type: "application/json"
+  	}));
   formData.append('file', file);
 
   const response = await fetch('http://' + SERVER_URI + ':8080/prototype/upload', {

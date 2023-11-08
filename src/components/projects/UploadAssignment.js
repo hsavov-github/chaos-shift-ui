@@ -24,7 +24,7 @@ export default function UploadAssignment() {
 	
 	const onDrop = useCallback(acceptedFiles => {
 		setIsLoading(true);
-		uploadAssignment(acceptedFiles[0], auth).then( response =>
+		uploadAssignment(acceptedFiles[0], context.project.categories, auth).then( response =>
 		{
 			const assignmentBody = JSON.parse(response);
 			context.setProject({...context.project, assignment:assignmentBody.items});

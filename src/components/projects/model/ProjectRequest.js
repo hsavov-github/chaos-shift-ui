@@ -4,6 +4,12 @@ export class ProjectRequest {
     this.title = title;
     this.description = description;
 	this.status = status;
+	this.categories = [
+                        'History',
+                        'Cost Assessment',
+                        'Assignment',
+                        'Location',
+                      ];
 	//this.previews = previews;
   }
   

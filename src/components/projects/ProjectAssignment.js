@@ -91,6 +91,8 @@ const context = useContext(ProjectContext);
                <TextField
 				  fullWidth 
 				  disabled
+				  multiline
+                  maxRows={6}
 				  id="labelId"
 				  label={prop.title}
 				  variant="standard"
