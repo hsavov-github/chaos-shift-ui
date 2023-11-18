@@ -21,6 +21,7 @@ import TextField from '@mui/material/TextField';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import CircularProgress from '@mui/material/CircularProgress';
 import UploadCard from '../UploadCard';
 import PreviewCard from '../PreviewCard';
 import {useNavigate } from "react-router-dom";
@@ -64,10 +65,6 @@ async function createData(segment, auth) {
 	});
 }
 
-const loadFile = async (id, auth) => {
-	const a = await loadImage(id, auth);
-	return a;
-}
 
 function Row( props) {
   const auth = useAuth();
@@ -111,7 +108,7 @@ function Row( props) {
 							<CardActionArea>
 								  <CardMedia
 									sx={{ height: 300 }}
-									image={row.data.image}
+									image={row.data.image.preview}
 									title="upload file"
 								  />
 							  </CardActionArea>
@@ -146,6 +143,7 @@ export default function ProjectSegments() {
   const [rows, setRows] = useState();
   const auth = useAuth();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const context = useContext(ProjectContext);
   useEffect(() => {
 	   console.log(context.project);
@@ -168,44 +166,52 @@ export default function ProjectSegments() {
 	 Promise.all(segmentPromises).then((values) => {
 		setRows(values);
 	 });*/
-	 
-	 const segmentPromises = context.project.assignment.map(assignmentItem => {
-		 return generateSuggestion(assignmentItem.description, auth)
-		 .then( response => {
-			 console.log(response);
-			 return {
-				type: assignmentItem.title,
-				prompt: assignmentItem.description,
-				fileId: response.data[0].url
-			  };
-		 }).then( segment => {
-			return {
-				title: segment.type,
-				data: 
-				  {
-					prompt:segment.prompt,
-					fileId:segment.fileId,
-					image: segment.fileId
-				  }
-			  };
-			});
-		 });
-		Promise.all(segmentPromises).then((values) => {
+	 setIsLoading(true);
+	 const segmentPromises = context.project.selectedAssignmentItems.flatMap( assignmentItem => {
+             return generateSuggestion(assignmentItem.description, auth)
+             .then(async response => {
+                      return await Promise.all(response.flatMap(elm => {
+                         const imgPromise = loadImage(elm.imageResponse.data[0].url, auth);
+                         return imgPromise.then(image => {
+                             return {
+                                        title: elm.title,
+                                        data:
+                                            {
+                                                prompt:elm.description,
+                                                fileId:elm.imageResponse.data[0].url,
+                                                image:image
+                                            }
+                                 };
+                          });
+                      }));
+                 })
+             });
+	Promise.all(segmentPromises).then((values) => {
 			const resolved = values.flat();
 			setRows(resolved);
-		});
+			setIsLoading(false);
+	});
 	 
  }
  
  function sendForReview() {
+     const previews = rows.map( row => {
+     return {
+              fileId: row.data.fileId,
+              title: row.title,
+              description: row.data.prompt,
+            };
+          });
 	 const request = {
-		 "title":"Shanghai house",
-		 "description": dummySegments[0].prompt,
-		 "status":""
+		 "title":context.project.title,
+		 "description": context.project.selectedAssignmentItems[0].description,
+		 "status":"",
+		 "previews":previews,
 	 };
+
 	 const requestReviewResponse = handleSubmit(request, auth);
 	 requestReviewResponse.then( response => {
-		 navigate("/chaos-shift-ui/request?reviewReqId=" + "0aae58a0-6374-4df2-9b40-f7a684df889c" /*response.id*/);
+		 navigate("/chaos-shift-ui/request?reviewReqId=" + /*"0aae58a0-6374-4df2-9b40-f7a684df889c"*/ response.id);
 	 });
 	 
 	 
@@ -218,7 +224,11 @@ export default function ProjectSegments() {
         <TableHead>
 		<TableRow>
 		   
-            <TableCell colspan="4" align="center"> 
+            <TableCell colSpan="4" align="center">
+                {isLoading && <Box sx={{ display: 'flex' }}>
+                					<CircularProgress />
+                				</Box>
+                }
 				<Button onClick={generateSummary}> Generate summary </Button>
 			</TableCell>
 			
@@ -232,7 +242,7 @@ export default function ProjectSegments() {
 		}
 		{rows && ( 
 			<TableRow>
-				<TableCell colspan="4" align="center"> 
+				<TableCell colSpan="4" align="center">
 					<Button onClick={sendForReview}> Send for review  </Button>
 				</TableCell>
 			</TableRow>

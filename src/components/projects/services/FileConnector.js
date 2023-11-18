@@ -81,7 +81,7 @@ export async function uploadAssignment(file, categories, auth) {
 }
 
 export async function generateSuggestion(prompt, auth ){
-      const response = fetch('http://' + SERVER_URI + ':8080/prototype/image', {
+      const response = fetch('http://' + SERVER_URI + ':8080/prototype/images', {
          method: 'POST',
          body: prompt,
          headers: {

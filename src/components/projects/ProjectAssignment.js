@@ -54,10 +54,10 @@ const context = useContext(ProjectContext);
 	   console.log(context.project);
 	  },[context.project]);	
 	
-  const [checked, setChecked] = React.useState([0]);
+  const [checked, setChecked] = React.useState([]);
 
   const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value.id);
+    const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
 
     if (currentIndex === -1) {
@@ -65,7 +65,10 @@ const context = useContext(ProjectContext);
     } else {
       newChecked.splice(currentIndex, 1);
     }
+    context.project.selectedAssignmentItems = newChecked;
+    console.log(context.project.selectedAssignmentItems);
     setChecked(newChecked);
+
   };
 
   return (
@@ -78,11 +81,11 @@ const context = useContext(ProjectContext);
             key={prop.id}
             disablePadding
           >
-            <ListItemButton role={undefined} onClick={handleToggle(prop.id)} dense>
+            <ListItemButton role={undefined} onClick={handleToggle(prop)} dense>
               <ListItemIcon>
                 <Checkbox
                   edge="start"
-                  checked={checked.indexOf(prop.id) !== -1}
+                  checked={checked.indexOf(prop) !== -1}
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ 'aria-labelledby': labelId }}
